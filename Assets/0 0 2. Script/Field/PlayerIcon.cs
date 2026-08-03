@@ -5,10 +5,13 @@ public class PlayerIcon : MonoBehaviour
 {
     
     [SerializeField] private float moveSpeed = 3f;
+    [SerializeField]private float PlayerHeight = 2f;
 
     private bool _isMove = false;
     private GameObject _target;
     private Vector3 _targetPos;
+
+    
 
     
 
@@ -49,7 +52,7 @@ public class PlayerIcon : MonoBehaviour
         if(_isMove) return;
 
             _target = targetOBJ;
-            _targetPos = _target.transform.position + Vector3.up;
+            _targetPos = new Vector3 (_target.transform.position.x , 1 * PlayerHeight, _target.transform.position.z);
             _isMove = true;
         
 

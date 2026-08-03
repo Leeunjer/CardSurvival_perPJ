@@ -14,7 +14,11 @@ namespace CardGame
         public float innerSize = 0f;
         public float height = 1f;
         public bool isFlatTopped;
-        public Material material;
+        public Material material_white;
+        
+        public Material material_Black;
+
+        private Material _currentMaterial;
 
         public static event Action OnBoardCreated;
         
@@ -61,12 +65,14 @@ namespace CardGame
                     hexRenderer.outerSize = outerSize;
                     hexRenderer.innerSize = innerSize;
                     hexRenderer.height = height;
-                    hexRenderer.SetMaterial(material);
+                    hexRenderer.SetMaterial(DecisionMaterial()); 
                     hexRenderer.DrawMesh();
 
                     tile.transform.SetParent(transform,true);
 
                 }
+                
+
             }
         }
 
@@ -126,6 +132,29 @@ namespace CardGame
             Vector3 tilePos = tileArray[tileXY.x,tileXY.y].transform.position;
 
             return tilePos;
+        }
+
+        private Material DecisionMaterial()
+        {
+            if(_currentMaterial == null)
+            {
+                _currentMaterial = material_Black;
+                return _currentMaterial;
+            }
+
+            if(_currentMaterial == material_Black)
+            {
+                _currentMaterial = material_white;
+            }
+            else
+            {
+                _currentMaterial = material_Black;
+            }
+            
+            
+
+
+            return _currentMaterial;
         }
 
     }

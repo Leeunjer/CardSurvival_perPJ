@@ -21,6 +21,7 @@ namespace CardGame
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshCollider))]
+[RequireComponent(typeof(HexScript))]
 public class HexRenderer : MonoBehaviour
 {
     private Mesh m_mesh;

@@ -31,9 +31,15 @@ namespace CardGame
     
     public static event Action OnPlayerSpwan;
     public static event Action<GameObject> OnMouseClick;
+    public static event Action OnHoverEnter;
+    public static event Action OnHoverExit;
 
     public Dictionary<Vector2Int, TileItem> tileBuffer = new Dictionary<Vector2Int , TileItem>();
     
+    [SerializeField]
+    private GameObject _currentGameObject;
+
+    private HexScript _currentHex;
 
 
 
@@ -67,16 +73,40 @@ namespace CardGame
 
         void Update()
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                if(Physics.Raycast(ray , out RaycastHit hit))
+            if(Physics.Raycast(ray , out RaycastHit hit))
+            {
+                if(_currentGameObject == null)
+                {
+                    _currentGameObject = hit.transform.gameObject;
+                }else if (hit.transform.gameObject != _currentGameObject)
+                {
+                    _currentGameObject.GetComponent<IHoverable>()?.OnHoverExit();
+                    _currentGameObject = hit.transform.gameObject;
+                    return;
+                }
+
+                if (Input.GetMouseButtonDown(0))
                 {
                     OnMouseClick?.Invoke(hit.transform.gameObject);
+                    if(_currentHex != null)
+                    {
+                        _currentHex.OnClicked();
+                    }
+                    _currentHex = hit.transform.gameObject.GetComponent<HexScript>();
+                    _currentHex.OnClicked();
+                    OnHoverExit?.Invoke();
                 }
+                hit.transform.gameObject.GetComponent<IHoverable>()?.OnHoverEnter();
+
             }
+
+            
+
         }
+
+
 
 
         public void SpwanPlayer()
@@ -91,7 +121,7 @@ namespace CardGame
                 y = Mathf.RoundToInt(_gridSize.y / 2)
             };
 
-        Vector3 spwanPos = hexGridLayout.GetTilePos(spwanTile) + (Vector3.up * 1);
+        Vector3 spwanPos = hexGridLayout.GetTilePos(spwanTile) + (Vector3.up * 2);
 
         Player.SetActive(true);
         Player.transform.position = spwanPos;
