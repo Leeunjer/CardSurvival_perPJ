@@ -18,10 +18,12 @@ namespace CardGame
         }
     }
 
+    
+
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshCollider))]
-[RequireComponent(typeof(HexScript))]
+[RequireComponent(typeof(HexScript))] //  변경예정
 public class HexRenderer : MonoBehaviour
 {
     private Mesh m_mesh;
@@ -30,6 +32,7 @@ public class HexRenderer : MonoBehaviour
     private MeshCollider m_collider;
 
     private List<Face> m_faces;
+
 
     public Material material;
 

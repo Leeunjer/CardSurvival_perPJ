@@ -5,13 +5,7 @@ using UnityEngine;
 namespace CardGame
 {
 
-    public enum BoardType
-    {
-        Battle,
-        Event,
-        None,
-
-    }
+    
 
 
     public class GamePlayFieldManager : MonoBehaviour
@@ -21,7 +15,7 @@ namespace CardGame
 
     public GameObject Player;
 
-    [Header("get GridSize")]
+    
     public Vector2Int _gridSize;
 
     [Header("Tiledata")]
@@ -34,15 +28,18 @@ namespace CardGame
     public static event Action OnHoverEnter;
     public static event Action OnHoverExit;
 
-    public Dictionary<Vector2Int, TileItem> tileBuffer = new Dictionary<Vector2Int , TileItem>();
+    //public Dictionary<Vector2Int, TileEvent> tileBuffer = new Dictionary<Vector2Int , TileEvent>();
     
-    [SerializeField]
     private GameObject _currentGameObject;
 
     private HexScript _currentHex;
 
+    private Vector2Int PlayerTile;
+
+    private HexGridLayout hexGridLayout;
 
 
+    /*
     private void Awake() {
         
         if(Instance != null && Instance != this)
@@ -51,6 +48,9 @@ namespace CardGame
             return;
         }
         Instance = this;
+        
+        
+        hexGridLayout  = FindAnyObjectByType<HexGridLayout>();
         
     }
 
@@ -67,7 +67,6 @@ namespace CardGame
 
         void Start()
         {
-            
         }
 
 
@@ -87,7 +86,7 @@ namespace CardGame
                     return;
                 }
 
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0) && TileChecking(hit.transform.gameObject))
                 {
                     OnMouseClick?.Invoke(hit.transform.gameObject);
                     if(_currentHex != null)
@@ -95,6 +94,16 @@ namespace CardGame
                         _currentHex.OnClicked();
                     }
                     _currentHex = hit.transform.gameObject.GetComponent<HexScript>();
+                    
+
+                    Vector2Int _tileoffset;
+                    BoardType _boardType;
+
+                    _tileoffset = _currentHex.TileOffset;
+                    //_boardType = tileBuffer[_tileoffset].boardType;
+
+                    //Debug.Log($"{_tileoffset} 의  보드타입 {_boardType}");
+
                     _currentHex.OnClicked();
                     OnHoverExit?.Invoke();
                 }
@@ -102,7 +111,6 @@ namespace CardGame
 
             }
 
-            
 
         }
 
@@ -111,8 +119,9 @@ namespace CardGame
 
         public void SpwanPlayer()
         {
+
+
         Debug.Log("SqwanPLayer");
-        HexGridLayout hexGridLayout = FindAnyObjectByType<HexGridLayout>();
         _gridSize = hexGridLayout.GetGridSize();
 
         Vector2Int spwanTile = new Vector2Int(0, 0)
@@ -121,7 +130,10 @@ namespace CardGame
                 y = Mathf.RoundToInt(_gridSize.y / 2)
             };
 
-        Vector3 spwanPos = hexGridLayout.GetTilePos(spwanTile) + (Vector3.up * 2);
+        PlayerTile = spwanTile;
+        GameObject spwanTileOBJ = hexGridLayout.GetTile(spwanTile);
+        spwanTileOBJ.GetComponent<HexScript>().OnClicked();
+        Vector3 spwanPos = spwanTileOBJ.transform.position + (Vector3.up * 2);
 
         Player.SetActive(true);
         Player.transform.position = spwanPos;
@@ -129,16 +141,34 @@ namespace CardGame
         OnPlayerSpwan?.Invoke();
         }
 
+
+        private bool TileChecking(GameObject targetTile)
+        {
+            if(!targetTile.GetComponent<HexScript>()) return false;
+
+            HexScript hextile = targetTile.GetComponent<HexScript>();
+            Debug.Log(Utils.GetHexDistance(PlayerTile , hextile.TileOffset));
+            if(Utils.GetHexDistance(PlayerTile , hextile.TileOffset) > 1)
+            {
+                return false;
+            }else
+            {
+                return true;
+            }
+
+        }
+
+        
         public void TileEventCreate(Vector2Int tileAD)
         {
-            //todo tile 딕션너리를 vector2Int값을 통해 tiledata 값을 지정 이후 tiledata값을 찾는 코드 추가 
+           
 
-            if (!tileBuffer.TryGetValue(tileAD , out TileItem tile) ||
+            if (!tileBuffer.TryGetValue(tileAD , out TileEvent tile) ||
             tile == null ||
             tile.boardType == BoardType.None)
             {
-                int currentTileNum = UnityEngine.Random.Range(0,_tileData.tileDatas.Length);
-                tile = _tileData.tileDatas[currentTileNum];
+                int currentTileNum = UnityEngine.Random.Range(0,_tileData.EventDatas.Length);
+                tile = _tileData.EventDatas[currentTileNum];
                 tileBuffer[tileAD] = tile;
             }else
             {
@@ -146,9 +176,9 @@ namespace CardGame
             }
         }
 
-        public TileItem TileEventGet(Vector2Int tileAD)
+        public TileEvent TileEventGet(Vector2Int tileAD)
         {
-            if (!tileBuffer.TryGetValue(tileAD,out TileItem currenttile))
+            if (!tileBuffer.TryGetValue(tileAD,out TileEvent currenttile))
             {
                 Debug.Log($"{tileAD} Tile has no Event");
             }
@@ -163,6 +193,9 @@ namespace CardGame
         {
             
         }
+
+
+        */
 
 
     }

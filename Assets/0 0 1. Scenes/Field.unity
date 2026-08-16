@@ -162,8 +162,7 @@ MeshRenderer:
   m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 0}
+  m_Materials: []
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -222,11 +221,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 691b4e3b608a2b54ab6d8dfc8005fcf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardGame.HexGridLayout
-  gridSize: {x: 9, y: 9}
+  gridSize: {x: 10, y: 10}
   outerSize: 1
   innerSize: 0
   height: 1
-  isFlatTopped: 1
+  isFlatTopped: 0
   material_white: {fileID: 2100000, guid: 8e9fbdf4b2a82e04eac4bedb8a73b2cb, type: 2}
   material_Black: {fileID: 2100000, guid: d8b648e0a512c074b9b6ae984d388128, type: 2}
 --- !u!1 &405529863
@@ -468,98 +467,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!1 &821569311
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 821569313}
-  - component: {fileID: 821569312}
-  m_Layer: 0
-  m_Name: RayTester
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &821569312
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 821569311}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de5cbd079d69f054aaa40901a5401c99, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RayTest
---- !u!4 &821569313
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 821569311}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20.05954, y: -11.01234, z: 0.44559}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &891722751
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 891722753}
-  - component: {fileID: 891722752}
-  m_Layer: 0
-  m_Name: GamePlayManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &891722752
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 891722751}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbbc112a70daa104b849c5ad5e0b423a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GamePlayFieldManager
-  Player: {fileID: 1207651620}
-  _gridSize: {x: 0, y: 0}
-  _tileData: {fileID: 0}
-  _currentGameObject: {fileID: 0}
---- !u!4 &891722753
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 891722751}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.02826, y: -21.96011, z: -3.44064}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1207651620
 GameObject:
   m_ObjectHideFlags: 0
@@ -894,8 +801,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 405529866}
   - {fileID: 2147036494}
-  - {fileID: 891722753}
   - {fileID: 84418556}
-  - {fileID: 821569313}
   - {fileID: 1536753501}
   - {fileID: 1207651621}

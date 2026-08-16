@@ -4,16 +4,19 @@ using UnityEngine;
 
 namespace CardGame
 {
+
+    
+    
     public class HexScript : MonoBehaviour , IHoverable
     {
 
     
     private bool _isPlayerOnHere = false;
     private bool _isHover = false;
-        private Vector3 _tilePosDown, _tilePosUP;
+    private Vector3 _tilePosDown, _tilePosUP;
 
+    public Vector2Int TileOffset {get; private set;}
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _tilePosDown = transform.position;
@@ -49,6 +52,7 @@ namespace CardGame
 
     public void OnClicked()
     {
+        
         if (_isPlayerOnHere)
         {
             _isPlayerOnHere = false;
@@ -58,6 +62,13 @@ namespace CardGame
             _isPlayerOnHere = true;
         }
     }
+    public void TileOffsetSet(Vector2Int offset)
+        {
+            TileOffset = offset;
+        }
+
+
+        
     }
 }
 

@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using UnityEngine;
 namespace CardGame
 {
@@ -21,6 +22,8 @@ namespace CardGame
         private Material _currentMaterial;
 
         public static event Action OnBoardCreated;
+
+        public static event Action<Vector2Int> OnBoardCreateComplete;
         
         
         private GameObject[,] tileArray;
@@ -38,14 +41,12 @@ namespace CardGame
         {
             LayoutGrid();
             OnBoardCreated?.Invoke();
+            OnBoardCreateComplete?.Invoke(gridSize);
         }
 
         private void OnValidate()
         {
-            if (Application.isPlaying)
-            {
-                //LayoutGrid();
-            }
+            
         }
 
         private void LayoutGrid()
@@ -58,8 +59,12 @@ namespace CardGame
                 {
                     GameObject tile = new GameObject($"Hex {x},{y}", typeof(HexRenderer));
                     tile.transform.position = GetPositionForHexFromCorrdinate(new Vector2Int(x,y));
+                    tile.GetComponent<HexScript>().TileOffsetSet(new Vector2Int(x,y));
                     tileArray[x,y] = tile;
                     
+                    
+                    
+
                     HexRenderer hexRenderer = tile.GetComponent<HexRenderer>();
                     hexRenderer.isFlatTopped = isFlatTopped;
                     hexRenderer.outerSize = outerSize;
@@ -127,13 +132,14 @@ namespace CardGame
         {
             return gridSize;
         }
-        public Vector3 GetTilePos(Vector2Int tileXY)
+        public GameObject GetTile(Vector2Int tileXY)
         {
-            Vector3 tilePos = tileArray[tileXY.x,tileXY.y].transform.position;
+            GameObject tile = tileArray[tileXY.x,tileXY.y];
 
-            return tilePos;
+            return tile;
         }
-
+        
+        
         private Material DecisionMaterial()
         {
             if(_currentMaterial == null)
@@ -152,10 +158,11 @@ namespace CardGame
             }
             
             
-
-
             return _currentMaterial;
         }
+
+        
+
 
     }
 }
