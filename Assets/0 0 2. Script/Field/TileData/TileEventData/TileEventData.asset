@@ -15,10 +15,10 @@ MonoBehaviour:
   tileEventItems:
   - EventName: None
     boardType: 2
-    BoardCount: 0
+    BoardCount: 10
   - EventName: Battle
     boardType: 0
-    BoardCount: 0
+    BoardCount: 10
   - EventName: Event
     boardType: 1
-    BoardCount: 0
+    BoardCount: 10

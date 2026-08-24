@@ -1,5 +1,4 @@
 using System;
-using JetBrains.Annotations;
 using UnityEngine;
 namespace CardGame
 {
@@ -21,7 +20,7 @@ namespace CardGame
 
         private Material _currentMaterial;
 
-        public static event Action OnBoardCreated;
+        
 
         public static event Action<Vector2Int> OnBoardCreateComplete;
         
@@ -40,7 +39,6 @@ namespace CardGame
         void Start()
         {
             LayoutGrid();
-            OnBoardCreated?.Invoke();
             OnBoardCreateComplete?.Invoke(gridSize);
         }
 
@@ -59,7 +57,7 @@ namespace CardGame
                 {
                     GameObject tile = new GameObject($"Hex {x},{y}", typeof(HexRenderer));
                     tile.transform.position = GetPositionForHexFromCorrdinate(new Vector2Int(x,y));
-                    tile.GetComponent<HexScript>().TileOffsetSet(new Vector2Int(x,y));
+                    tile.GetComponent<TileRenderer>().tileOffset = new Vector2Int(x,y);
                     tileArray[x,y] = tile;
                     
                     
