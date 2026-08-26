@@ -12,6 +12,8 @@ namespace CardGame
     {
         Battle,
         Event,
+        Shop,
+        CampFire,
         None,
 
     }
@@ -46,6 +48,8 @@ namespace CardGame
             isPlayerOnHere = playerOnHere;
         }
 
+        public TileData[] neighborTiles = new TileData[6];
+
 
 
 
@@ -63,7 +67,8 @@ namespace CardGame
 
     public  class TileDataCollectedData  
     {
-
+        
+        
     
 
         public  Vector2Int _playerPosData{get ; private set;}
@@ -76,10 +81,28 @@ namespace CardGame
 
         private PlayerData _playerdata;
         
+        private static readonly Vector2Int[] EvenDirections =
+        {
+        new(-1, 0),  // 왼
+        new( 0,-1),  // 좌상
+        new( 1,-1),  // 우상
+        new( 1, 0),  // 오른
+        new( 0, 1),  // 우하
+        new(-1, 1)   // 좌하
+        };
+
+        private static readonly Vector2Int[] OddDirections =
+        {
+        new(-1,-1),  // 좌상
+        new( 0,-1),  // 우상
+        new( 1, 0),  // 오른
+        new( 1, 1),  // 우하
+        new( 0, 1),  // 좌하
+        new(-1, 0)   // 왼
+        };
 
 
-
-        public void BoardSetting(int horizon , int vertical) // 보드 생성 및 초기화 담당
+        public void BoardSetting(int horizon , int vertical) // 보드 데이터 생성 및 초기화 담당
         {
             for(int x = 0; x < horizon; x++)
             {
@@ -92,22 +115,36 @@ namespace CardGame
             }
         }
 
-        private void TileSetting(Vector2Int tilePos) // 타일 생성 및 초기화 담당
+        private void TileSetting(Vector2Int tilePos) // 타일 데이터 생성 및 초기화 담당
         {
             TileData currentTiledata = new TileData();
 
             _boardData[tilePos] = currentTiledata;
         }
 
-        public void SetUpTileEvent(Vector2Int tilePos , BoardType boardEvent)
+        public void SetUpTileEvent(Vector2Int tilePos , BoardType boardEvent) //타일 이벤트 생성 밑 할당
         {
             _boardData[tilePos].BoardTypeSetting(boardEvent);
         }
 
-        public void BoardUpdate() // 보드의 업데이트
+        
+        public void ConnectingNeighborTile(Vector2Int offset) // 타일의 이웃 타일을 저장
         {
-            OnBoardUpdate?.Invoke(_boardData);
+            Vector2Int[] directions = (offset.y % 2 == 0) ? EvenDirections : OddDirections;
+
+            if(!_boardData.TryGetValue(offset , out TileData currentTile))
+            return;
+
+            for(int i =0; i < 6; i++)
+            {
+                Vector2Int neighborCoordinate = offset + directions[i];
+                if(_boardData.TryGetValue(neighborCoordinate , out TileData neighborTile))
+                {
+                    currentTile.neighborTiles[i] = neighborTile;
+                }
+            }
         }
+
         
         
         public BoardType PlayerEventUpdate(Vector2Int PlayerDis) // 플레이어 위치 변경에 대한 코드 , 플레이어의 목적지의 보드타입을 반환함

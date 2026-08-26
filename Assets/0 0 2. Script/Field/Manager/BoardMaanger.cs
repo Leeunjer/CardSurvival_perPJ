@@ -23,6 +23,8 @@ namespace CardGame
         [Header("Event Sprite")]
         public Sprite BattleSprite;
         public Sprite EventSprite;
+        public Sprite ShopSprite;
+        public Sprite CampFireSprite;
 
         
 
@@ -58,10 +60,15 @@ namespace CardGame
 
             SetUpTileEventBuffer();
             SetUpBoardEvent(boardSize);
-            PlayerSpwan(boardSize);
 
+            ConnectAllNeighbors(boardSize);
+            
+            PlayerSpwan(boardSize);
+            
         }
 
+
+        #region 이벤트 셋팅
         private void SetUpBoardEvent(Vector2Int boardSize)
         {
             int Top = 0;
@@ -122,11 +129,19 @@ namespace CardGame
                 break;
 
                 case BoardType.Battle:
-                    SetupEventRender(tilePos , BattleSprite);
+                SetupEventRender(tilePos , BattleSprite);
                 break;
 
                 case BoardType.Event:
-                    SetupEventRender(tilePos , EventSprite);
+                SetupEventRender(tilePos , EventSprite);
+                break;
+
+                case BoardType.Shop:
+                SetupEventRender(tilePos , ShopSprite);
+                break;
+
+                case BoardType.CampFire:
+                SetupEventRender(tilePos, CampFireSprite);
                 break;
                 
             }
@@ -157,6 +172,34 @@ namespace CardGame
             }
         }
 
+        #endregion
+
+        private void ConnectAllNeighbors(Vector2Int boardSize)
+        {
+            for(int i = 0 ; i < boardSize.x ; i++)
+            {
+                for (int j =0 ; j < boardSize.y ; j++)
+                {
+                    _tileDataCollecter.ConnectingNeighborTile(new Vector2Int(i,j));
+                }
+            }
+        }
+
+
+#region 이벤트 이동
+        public void EvnetMove(Vector2Int tileOffset)
+        {
+            
+        }
+
+        private void FindEmtyNeighborTile(TileData eventTile)
+        {
+            
+        }
+
+
+        #endregion
+
         public Vector2Int GetPlsyerPos()
         {
             return _tileDataCollecter._playerPosData;
@@ -175,7 +218,7 @@ namespace CardGame
         }
         
 
-
+        
         private void PlayerSpwan(Vector2Int boardSize)
         {
             Debug.Log("PLayerSpwan");
@@ -192,6 +235,8 @@ namespace CardGame
             
         }
 
+
+
         private void SetupEventRender(Vector2Int tileOffset , Sprite eventSprite)
         {
             GameObject EventRenderer = new GameObject($"GameEvent" , typeof(SpriteRenderer));
@@ -202,6 +247,27 @@ namespace CardGame
 
             EventRenderer.transform.localPosition = new Vector3(0,0.6f,0);
             EventRenderer.transform.localRotation = Quaternion.Euler(90,0,0);
+        }
+
+
+
+
+
+        
+
+        private Vector2Int[] tileSerching(Vector2Int tileOffset , Dictionary<Vector2Int , TileData> boardData)
+        {
+            Vector2Int[] vector2Ints = new Vector2Int[6];
+
+            for (int i = 0; i < boardData.Count; i++)
+            {
+                for(int j = 0 ; j<boardData.Count; j++)
+                {
+                    
+                }
+            }
+
+            return vector2Ints;
         }
 
     }

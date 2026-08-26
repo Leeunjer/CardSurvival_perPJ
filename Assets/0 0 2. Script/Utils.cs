@@ -21,6 +21,8 @@ public interface IHoverable
     void OnHoverExit();
 }
 
+
+
 public class Utils 
 {
     public static CubeCoord OffsetToCube(Vector2Int offset)
@@ -40,5 +42,6 @@ public class Utils
         return Mathf.Max(Mathf.Abs(cubeA.x - cubeB.x), Mathf.Abs(cubeA.y - cubeB.y), Mathf.Abs(cubeA.z - cubeB.z));
 
     }
+    
 }
 

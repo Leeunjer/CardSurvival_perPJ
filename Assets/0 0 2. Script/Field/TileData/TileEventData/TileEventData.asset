@@ -14,11 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardGame.TileEventData
   tileEventItems:
   - EventName: None
-    boardType: 2
-    BoardCount: 10
+    boardType: 4
+    BoardCount: 30
   - EventName: Battle
     boardType: 0
-    BoardCount: 10
+    BoardCount: 15
   - EventName: Event
     boardType: 1
-    BoardCount: 10
+    BoardCount: 5
+  - EventName: Shop
+    boardType: 2
+    BoardCount: 5
+  - EventName: Camp
+    boardType: 3
+    BoardCount: 5

@@ -502,6 +502,8 @@ MonoBehaviour:
   _hexGridLayOut: {fileID: 84418557}
   BattleSprite: {fileID: 21300000, guid: 6efbde48ce2c52641b1a0ba401462bbe, type: 3}
   EventSprite: {fileID: 21300000, guid: d6d78016bf6b80841a0e8d65731583b3, type: 3}
+  ShopSprite: {fileID: 21300000, guid: dc62b72bf20789543bd905eecd2f0087, type: 3}
+  CampFireSprite: {fileID: 21300000, guid: 8b5841e1af879354c9a404ec98260f2e, type: 3}
 --- !u!4 &751801012
 Transform:
   m_ObjectHideFlags: 0
