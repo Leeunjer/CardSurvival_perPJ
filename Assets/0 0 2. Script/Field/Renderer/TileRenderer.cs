@@ -13,7 +13,7 @@ public class TileRenderer : MonoBehaviour , IHoverable
     public Vector2Int tileOffset{get; set;}
 
 
-    private SpriteRenderer _spriteRenderer; 
+    
     
     
     void Start()
@@ -39,6 +39,11 @@ public class TileRenderer : MonoBehaviour , IHoverable
         transform.DOMove(_defaultTilePos , 0.3f);
     }
 
+    
+    
+        
+    
+    
     
     
 

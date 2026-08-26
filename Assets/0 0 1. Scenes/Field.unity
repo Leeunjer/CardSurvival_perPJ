@@ -531,6 +531,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e4f5aab845fc5e47af63de834e66930, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardGame.GamePlayManager
+  _hexGridLayout: {fileID: 84418557}
   playerObject: {fileID: 1207651620}
 --- !u!1 &1207651620
 GameObject:

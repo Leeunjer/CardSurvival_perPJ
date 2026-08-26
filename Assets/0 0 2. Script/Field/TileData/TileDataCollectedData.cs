@@ -28,9 +28,16 @@ namespace CardGame
 
         private string _tileName;
 
+        public Vector2Int tileOffset{get; private set;}
+
         public TileData()
         {
             
+        }
+
+        public void SetTileOffset(Vector2Int tileoffset)
+        {
+            this.tileOffset = tileoffset;
         }
 
         public void BoardTypeSetting(BoardType boardType)
@@ -76,9 +83,7 @@ namespace CardGame
         //보드 구성 데이터 구성 데이터는 딕셔너리로 벡터 2 인트 와 타일 데이터를 인자로 받는다 타일 데이터는 보드타입과 보드타입 세팅을 갖는다
         private Dictionary<Vector2Int , TileData> _boardData = new Dictionary<Vector2Int, TileData>();
 
-        public static event Action<Vector2Int> OnPlayerMove;
-        public static event Action<Dictionary<Vector2Int , TileData>> OnBoardUpdate;
-
+        
         private PlayerData _playerdata;
         
         private static readonly Vector2Int[] EvenDirections =
@@ -118,6 +123,7 @@ namespace CardGame
         private void TileSetting(Vector2Int tilePos) // 타일 데이터 생성 및 초기화 담당
         {
             TileData currentTiledata = new TileData();
+            currentTiledata.SetTileOffset(tilePos);
 
             _boardData[tilePos] = currentTiledata;
         }
@@ -143,6 +149,11 @@ namespace CardGame
                     currentTile.neighborTiles[i] = neighborTile;
                 }
             }
+        }
+
+        public TileData GetTileData(Vector2Int tileOffset)
+        {
+            return _boardData[tileOffset];
         }
 
         

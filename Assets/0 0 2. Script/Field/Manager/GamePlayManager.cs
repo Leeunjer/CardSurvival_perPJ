@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 
@@ -11,8 +14,13 @@ namespace CardGame
 
         private TileRenderer _currentTileRendeer;
 
+        [SerializeField]
+        private HexGridLayout _hexGridLayout;
+
         public GameObject playerObject;
 
+        public static event Action TurnEnd;
+        public static event Action TurenStart;
         
 
         void OnEnable() 
@@ -39,12 +47,14 @@ namespace CardGame
                     _currentTileRendeer.OnHoverExit();
                     _currentTileRendeer = hit.transform.GetComponent<TileRenderer>();
                 }
-
+                
                 if(Input.GetMouseButtonDown(0) && tilechecking(_currentTileRendeer))
                 {
-                    playerObject.transform.position = _currentTileRendeer.gameObject.transform.position;
+                    //playerObject.transform.position = _currentTileRendeer.gameObject.transform.position;
+                    playerObject.transform.DOMove(_currentTileRendeer.gameObject.transform.position , 0.8f);
                     BoardMaanger.Instance.GetBoardType(_currentTileRendeer.tileOffset);
                     _currentTileRendeer.OnHoverExit();
+                    TileEventMove();
                 }
 
 
@@ -71,7 +81,20 @@ namespace CardGame
 
         }
 
-        
+
+        /// <summary>
+        /// 이벤트가 있는 타일들을 순회하면서 랜덤한 방향의 이웃 이벤트를 변경하고 해당 타일로 이동한다.
+        /// </summary>
+        private void TileEventMove()
+        {
+            List<TileEventRenderer> tileEventRenderers = BoardMaanger.Instance.GetEventTileEventRendererList();
+            foreach (TileEventRenderer tileEventRenderer in tileEventRenderers)
+            {
+                Vector2Int dirOffset  = BoardMaanger.Instance.TryMoveEvent(tileEventRenderer.TileOffset);
+                GameObject dirTile = _hexGridLayout.GetTile(dirOffset);
+                tileEventRenderer.MoveEventRenderer(dirTile , dirOffset);
+            }
+        }
 
 
 
