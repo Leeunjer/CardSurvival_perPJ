@@ -42,6 +42,10 @@ namespace CardGame
             _spriteRenderer.sprite = eventsptire;
             
         }
+        public void DestroyThisObjct()
+        {
+           Destroy(gameObject); 
+        }
     }
 
 }

@@ -304,12 +304,13 @@ namespace CardGame
         public BoardType GetBoardType(Vector2Int TargetTile)
         {
             BoardType boardType = _tileDataCollecter.PlayerEventUpdate(TargetTile);
-            for(int i = _TileEventRenderers.Count; i < 0; i--)
+            for(int i = _TileEventRenderers.Count -1; i >= 0; i--)
             {
                 TileEventRenderer tileEventRenderer = _TileEventRenderers[i];
                 if(tileEventRenderer != null && tileEventRenderer.TileOffset == TargetTile)
                 {
                     Destroy(tileEventRenderer.gameObject);
+                    
                     _TileEventRenderers.RemoveAt(i);
                     break;
                 }

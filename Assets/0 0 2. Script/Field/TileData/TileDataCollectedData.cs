@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -67,7 +66,9 @@ namespace CardGame
     {
         public Vector2Int PlayerPos{get ; set;}
 
-        public String DeckData{get; set;}
+        public string DeckData {get; set;}
+
+        public int PlayerHp{get;set;}
 
         
     }

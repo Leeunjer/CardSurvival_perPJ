@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,6 +35,7 @@ namespace CardGame
 
             _icon.sprite = _cardData.icon;
             _name.text = _cardData.cardName;
+            gameObject.name = _cardData.cardName;
             _cost.text = _cardData.cost.ToString();
 
             

@@ -29,31 +29,44 @@ namespace CardGame
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            Ray ray = Camera.main.ScreenPointToRay(eventData.position);
-
-
-            _results.Clear();
-            _raycaster.Raycast(eventData,_results);
-            if(_results.Count > 0)
+            if (!EventSystem.current.IsPointerOverGameObject())
             {
-                foreach(var result in _results)
+                Ray ray = Camera.main.ScreenPointToRay(eventData.position);
+
+
+                _results.Clear();
+                _raycaster.Raycast(eventData,_results);
+                if(_results.Count > 0)
                 {
-                    Debug.Log(result.gameObject.name);
+                    foreach(var result in _results)
+                    {
+                        Debug.Log(result.gameObject.name);
 
+                    }
                 }
-            }
 
-            if(Physics.Raycast(ray,out RaycastHit hit , 80f))
-            {
-                Debug.Log(hit.collider.name);
+                BattlePlayManger.Instance.UseCard(_cardData.effactType);
+                HandManager.Inst.RemoveCard(gameObject);
+                gameObject.SetActive(false);
 
-                if (hit.collider.CompareTag("Player"))
+                /*
+                if(Physics.Raycast(ray,out RaycastHit hit , 80f))
                 {
-                    hit.collider.GetComponent<IICardCommand>().CardEffect(_cardData.effactType);
-                    HandManager.Inst.RemoveCard(gameObject);
-                    gameObject.SetActive(false);
+                    Debug.Log(hit.collider.name);
+
+                    if (hit.collider.CompareTag("Player"))
+                    {
+                        hit.collider.GetComponent<IICardCommand>().CardEffect(_cardData.effactType);
+                        HandManager.Inst.RemoveCard(gameObject);
+                        gameObject.SetActive(false);
+                    }
                 }
+                */
+
+
+
             }
+            
             HandManager.Inst.ArrangeCards();
             gameObject.GetComponent<Image>().raycastTarget = true;
 

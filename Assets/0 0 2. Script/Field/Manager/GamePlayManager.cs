@@ -21,6 +21,8 @@ namespace CardGame
 
         public static event Action TurnEnd;
         public static event Action TurenStart;
+
+        private bool isMoving = false;
         
 
         void OnEnable() 
@@ -48,17 +50,25 @@ namespace CardGame
                     _currentTileRendeer = hit.transform.GetComponent<TileRenderer>();
                 }
                 
-                if(Input.GetMouseButtonDown(0) && tilechecking(_currentTileRendeer))
+                if(Input.GetMouseButtonDown(0) && tilechecking(_currentTileRendeer) && !isMoving)
                 {
-                    //playerObject.transform.position = _currentTileRendeer.gameObject.transform.position;
-                    playerObject.transform.DOMove(_currentTileRendeer.gameObject.transform.position , 0.8f);
-                    BoardMaanger.Instance.GetBoardType(_currentTileRendeer.tileOffset);
+                    Vector3 currentTileRendererPos = _currentTileRendeer.gameObject.transform.position;
+                    Vector3 dirPos = new Vector3(currentTileRendererPos.x, 1f , currentTileRendererPos.z);
+                    BoardType ClickBoard = BoardType.None;
+
+                    isMoving = true;
+                    playerObject.transform.DOMove(dirPos , 0.8f).OnComplete(() =>
+                    {
+                        isMoving = false;
+                    });
+                    ClickBoard = BoardMaanger.Instance.GetBoardType(_currentTileRendeer.tileOffset);
                     _currentTileRendeer.OnHoverExit();
                     TileEventMove();
+                    OnClcikTile(ClickBoard);
                 }
 
 
-                if(!BoardMaanger.Instance.GetPlayerHas(_currentTileRendeer.tileOffset))
+                if(!BoardMaanger.Instance.GetPlayerHas(_currentTileRendeer.tileOffset) && !isMoving)
                 _currentTileRendeer.OnHoverEnter();
             }
         }
@@ -94,6 +104,40 @@ namespace CardGame
                 GameObject dirTile = _hexGridLayout.GetTile(dirOffset);
                 tileEventRenderer.MoveEventRenderer(dirTile , dirOffset);
             }
+        }
+
+
+        /// <summary>
+        /// 클릭된 보드 타입에 따라 씬이 바뀐다
+        /// </summary>
+        /// <param name="boardType"></param>
+        private void OnClcikTile(BoardType boardType)
+        {
+            switch (boardType)
+            {
+                
+                case BoardType.None :
+                
+                break;
+
+                case BoardType.Battle :
+                
+                break;
+
+                case BoardType.Event :
+                
+                break;
+
+                case BoardType.Shop :
+                
+                break;
+
+                case BoardType.CampFire :
+                
+                break;
+            }
+
+            boardType =BoardType.None;
         }
 
 
