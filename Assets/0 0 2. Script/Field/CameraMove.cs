@@ -2,13 +2,18 @@ using UnityEngine;
 
 public class CameraMove : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+
+    private PlayerIcon _playerIcon;
+    
+
+
     void Start()
     {
-        
+        _playerIcon = FindFirstObjectByType<PlayerIcon>();
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         

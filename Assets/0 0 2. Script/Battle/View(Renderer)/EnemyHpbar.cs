@@ -8,12 +8,16 @@ namespace CardGame
     {
         private Camera cam;
 
-        void Start()
+        void Awake()
         {
             cam =Camera.main;
         }
 
-        // Update is called once per frame
+        
+
+
+
+        
         void LateUpdate()
         {
 
@@ -22,6 +26,8 @@ namespace CardGame
             transform.rotation = Quaternion.LookRotation(direction);
         }
 
+        
+        
 
     }
 

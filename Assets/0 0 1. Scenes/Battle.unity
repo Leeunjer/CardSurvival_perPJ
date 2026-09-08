@@ -1279,7 +1279,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardGame.EnemyHpbar
   _image: {fileID: 1084163035}
-  _Hp: 0
+  _maxHp: 100
 --- !u!4 &1425841787 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4293736555261642588, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}

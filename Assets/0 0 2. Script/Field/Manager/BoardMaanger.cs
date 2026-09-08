@@ -316,6 +316,8 @@ namespace CardGame
                 }
             }
             Debug.Log($"보드 타입{boardType}");
+
+            
             return boardType;
 
         }

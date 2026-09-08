@@ -1,5 +1,6 @@
 using CardGame;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerIcon : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class PlayerIcon : MonoBehaviour
     private GameObject _target;
     private Vector3 _targetPos;
 
+    [SerializeField]
+    private Image IconVeiw;
     
 
     
@@ -18,6 +21,9 @@ public class PlayerIcon : MonoBehaviour
     void OnEnable()
     {
         GamePlayFieldManager.OnMouseClick += OrderPLayerMove;
+
+        IconVeiw.sprite = PlayerDataManager.Instance.currentPlayer.playerIcon;
+
     }
 
     void OnDisable()

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 
@@ -60,11 +61,13 @@ namespace CardGame
                     playerObject.transform.DOMove(dirPos , 0.8f).OnComplete(() =>
                     {
                         isMoving = false;
+                        OnClickTile(ClickBoard);
+                        
                     });
                     ClickBoard = BoardMaanger.Instance.GetBoardType(_currentTileRendeer.tileOffset);
                     _currentTileRendeer.OnHoverExit();
                     TileEventMove();
-                    OnClcikTile(ClickBoard);
+                    
                 }
 
 
@@ -111,7 +114,7 @@ namespace CardGame
         /// 클릭된 보드 타입에 따라 씬이 바뀐다
         /// </summary>
         /// <param name="boardType"></param>
-        private void OnClcikTile(BoardType boardType)
+        private void OnClickTile(BoardType boardType)
         {
             switch (boardType)
             {
@@ -122,7 +125,8 @@ namespace CardGame
 
                 case BoardType.Battle :
                 
-                break;
+                    SceneManager.LoadScene(2);
+                    break;
 
                 case BoardType.Event :
                 

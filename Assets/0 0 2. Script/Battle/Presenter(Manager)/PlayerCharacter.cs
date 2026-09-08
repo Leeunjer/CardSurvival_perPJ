@@ -91,6 +91,7 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
     {
         Debug.Log("Attack1");
         _playerView.Attack1();
+        BattlePlayManger.Instance.HitDamge(20);
         yield return null;
     }
 
