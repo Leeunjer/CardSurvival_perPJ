@@ -76,7 +76,7 @@ namespace CardGame
         private Dictionary<Vector2Int , TileData> _boardData = new Dictionary<Vector2Int, TileData>();
 
         
-        private PlayerData _playerdata;
+        
         
         private static readonly Vector2Int[] EvenDirections =
         {
@@ -148,19 +148,33 @@ namespace CardGame
             return _boardData[tileOffset];
         }
 
+        public void SetBoardData(Dictionary<Vector2Int , TileData> boardData)
+        {
+            _boardData = new Dictionary<Vector2Int, TileData>(boardData);
+        }
+
+        public Dictionary<Vector2Int , TileData> GetBoardData()
+        {
+            return new Dictionary<Vector2Int, TileData>(_boardData);
+        }
+
         
-        
+        /// <summary>
+        /// 플레이어가 움직이면서 해당 타일의 보드 타입, 플레이어 유무를 정하는 코드
+        /// </summary>
+        /// <param name="PlayerDis">플레이어 이동 목표</param>
+        /// <returns></returns>
         public BoardType PlayerEventUpdate(Vector2Int PlayerDis) // 플레이어 위치 변경에 대한 코드 , 플레이어의 목적지의 보드타입을 반환함
         {
-            BoardType boardType = BoardType.None;
-
             _boardData[_playerPosData].PlayerPosSetting(false);
 
             _playerPosData = PlayerDis;
             _boardData[_playerPosData].PlayerPosSetting(true);
 
-            boardType = _boardData[_playerPosData].GetBoardType();
-
+            BoardType boardType = _boardData[_playerPosData].GetBoardType();
+            _boardData[_playerPosData].BoardTypeSetting(BoardType.None);
+            
+            
 
             return boardType;
         }

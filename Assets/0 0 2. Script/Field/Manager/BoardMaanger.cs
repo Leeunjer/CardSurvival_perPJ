@@ -31,6 +31,7 @@ namespace CardGame
         /// </summary>
         private List<TileEventRenderer> _TileEventRenderers = new List<TileEventRenderer>();
 
+        private bool _isDataLoad = false;
         
 
         private void Awake() 
@@ -55,15 +56,23 @@ namespace CardGame
         void OnDestroy()
         {
             HexGridLayout.OnBoardCreateComplete -= SetUpBoard;
+            
         }
+
+        
 
         private void SetUpBoard(Vector2Int boardSize)
         {
             
-
+            
             _tileDataCollecter.BoardSetting(boardSize.x,boardSize.y);
 
+            _isDataLoad = LoadBoardData();
+
+
             SetUpTileEventBuffer();
+
+            
             SetUpBoardEvent(boardSize);
 
             ConnectAllNeighbors(boardSize);
@@ -117,24 +126,38 @@ namespace CardGame
         }
 
         /// <summary>
-        /// 타일이 생성 되었을 때 그 생성된 타일들에게 이벤트를 랜덤하게 부여 이벤트가 부여된 타일들은 그 위에 타일 이벤트 렌더러 생성
+        /// 타일이 생성 되었을 때 그 생성된 타일들에게 이벤트를 부여 (부를 데이터가 있으면 데이터를 기준으로 데이터가 없으면 랜덤으로 부여) \n
+        ///  이벤트가 부여된 타일들은 그 위에 타일 이벤트 렌더러 생성
         /// </summary>
         /// <param name="tilePos"></param>
         private void SetUpTileEvent(Vector2Int tilePos) 
         {
-            
-            if(_tileEventBuffer.Count <= 0)
+            BoardType tileEventType;
+            if (_isDataLoad)
             {
-                _tileDataCollecter.SetUpTileEvent(tilePos , BoardType.None);
+                tileEventType  = _tileDataCollecter.GetTileData(tilePos).GetBoardType();
+                Debug.Log($"{tileEventType}");
                 
-
+            }
+            else
+            {
+                if(_tileEventBuffer.Count <= 0)
+                {
+                _tileDataCollecter.SetUpTileEvent(tilePos , BoardType.None);
                 return;
+                }
+
+                tileEventType = _tileEventBuffer[0].boardType;
+                _tileEventBuffer.RemoveAt(0);
+                _tileDataCollecter.SetUpTileEvent(tilePos , tileEventType);
             }
 
-            TileEventItem tileEventItem = _tileEventBuffer[0];
-            _tileEventBuffer.RemoveAt(0);
-            _tileDataCollecter.SetUpTileEvent(tilePos , tileEventItem.boardType);
-            switch (tileEventItem.boardType)
+            
+            
+
+
+
+            switch (tileEventType)
             {
                 case BoardType.None:
                 break;
@@ -162,6 +185,8 @@ namespace CardGame
 
         private void SetUpTileEventBuffer()
         {
+            if(_isDataLoad)return;
+
             _tileEventBuffer.Clear();
             for(int i = 0 ; i < _tileEventData.tileEventItems.Length; i++)
             {
@@ -201,17 +226,40 @@ namespace CardGame
         }
 
 
-        private void SetupEventRender(Vector2Int tileOffset)
+        /// <summary>
+        /// 씬이 이동할 때 마다 타일 이벤트를 저장하고 다시 돌아올 때 그 내용을 저장하는 메소드
+        /// </summary>
+        public void TileEventSave()
         {
-            
-            GameObject EventRenderer = new GameObject("GameEvent" , typeof(SpriteRenderer));
-            EventRenderer.transform.SetParent(_hexGridLayOut.GetTile(tileOffset).transform);
+            if(PlayerDataManager.Instance.currentBoardData == null)
+            {
+                PlayerDataManager.Instance.currentBoardData = new Dictionary<Vector2Int, TileData>();
+            }
+            PlayerDataManager.Instance.currentBoardData.Clear();
+            PlayerDataManager.Instance.currentBoardData = _tileDataCollecter.GetBoardData();
             
 
-            EventRenderer.transform.localPosition = new Vector3(0,0.6f,0);
-            EventRenderer.transform.localRotation = Quaternion.Euler(90,0,0);
-
+            
         }
+
+        /// <summary>
+        /// 씬 이동시 타일 데이터가 존제 할 때 그 데이터를 불러오는 메소드
+        /// </summary>
+        /// <returns></returns>
+        private bool LoadBoardData()
+        {
+            if(PlayerDataManager.Instance.currentBoardData == null) return false;
+
+            
+            _tileDataCollecter.SetBoardData(PlayerDataManager.Instance.currentBoardData);
+            _tileDataCollecter.SetUpPlayerData(PlayerDataManager.Instance.currentPlayer.PlayerPos);
+
+
+            _tileEventBuffer.Clear();
+            return true;
+        }
+
+        
 
         #endregion
 
@@ -334,15 +382,25 @@ namespace CardGame
         
         private void PlayerSpwan(Vector2Int boardSize)
         {
+            Vector2Int SpwanTilePos;
+            if(!_isDataLoad)
+            {
             Debug.Log("PLayerSpwan");
-
-            Vector2Int SpwanTilePos = new Vector2Int()
+            SpwanTilePos = new Vector2Int()
             {
                 x = Mathf.RoundToInt(boardSize.x / 2),
                 y = Mathf.RoundToInt(boardSize.y / 2)
             };
-
             _tileDataCollecter.SetUpPlayerData(SpwanTilePos);
+            }
+            else
+            {   
+                Debug.Log("playerLoad");
+                
+                SpwanTilePos = _tileDataCollecter._playerPosData;
+            }
+
+
             _playerObjact.transform.position = _hexGridLayOut.GetTile(SpwanTilePos).transform.position + Vector3.up;
             _playerObjact.SetActive(true);
             

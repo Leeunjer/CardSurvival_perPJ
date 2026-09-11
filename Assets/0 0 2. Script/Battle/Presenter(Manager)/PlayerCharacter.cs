@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace CardGame
@@ -14,9 +15,15 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
 
     private bool _isProcessing = false;
 
+    private GameObject _PlayerCharactor;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        SetPlayerCharactor(PlayerDataManager.Instance.currentPlayer.playerPrefab);
+        GameObject PlayerChractor = Instantiate(_PlayerCharactor, gameObject.transform);
+        PlayerChractor.transform.localPosition = new Vector3(0,0,0);
+        PlayerChractor.transform.rotation = Quaternion.Euler(0,-90,0);
         _playerView = gameObject.GetComponentInChildren<PlayerView>();
     }
 
@@ -25,6 +32,11 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
     {
         
     }
+
+    public void SetPlayerCharactor(GameObject playerCharactor)
+        {
+            _PlayerCharactor = playerCharactor;
+        }
 
     private void AddCommand(IEnumerator command)
         {

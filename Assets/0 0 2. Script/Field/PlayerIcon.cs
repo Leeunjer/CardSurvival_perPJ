@@ -33,7 +33,7 @@ public class PlayerIcon : MonoBehaviour
 
     void Update()
     {
-        gameObject.transform.LookAt(Camera.main.transform);
+        
         PlayerMove();
     }
 

@@ -20,6 +20,8 @@ namespace CardGame
 
         public GameObject playerObject;
 
+        private BoardMaanger _boardManager;
+
         public static event Action TurnEnd;
         public static event Action TurenStart;
 
@@ -32,7 +34,7 @@ namespace CardGame
         }
         void Start()
         {
-            
+            _boardManager = FindFirstObjectByType<BoardMaanger>();
         }
 
         void Update()
@@ -55,16 +57,17 @@ namespace CardGame
                 {
                     Vector3 currentTileRendererPos = _currentTileRendeer.gameObject.transform.position;
                     Vector3 dirPos = new Vector3(currentTileRendererPos.x, 1f , currentTileRendererPos.z);
-                    BoardType ClickBoard = BoardType.None;
-
+                    BoardType ClickBoard;
+                    ClickBoard = BoardMaanger.Instance.GetBoardType(_currentTileRendeer.tileOffset);
                     isMoving = true;
                     playerObject.transform.DOMove(dirPos , 0.8f).OnComplete(() =>
                     {
                         isMoving = false;
                         OnClickTile(ClickBoard);
+                        PlayerDataManager.Instance.PlayerPosSet(_currentTileRendeer.tileOffset);
                         
                     });
-                    ClickBoard = BoardMaanger.Instance.GetBoardType(_currentTileRendeer.tileOffset);
+                    
                     _currentTileRendeer.OnHoverExit();
                     TileEventMove();
                     
@@ -124,8 +127,10 @@ namespace CardGame
                 break;
 
                 case BoardType.Battle :
-                
+
                     SceneManager.LoadScene(2);
+                    _boardManager.TileEventSave();
+
                     break;
 
                 case BoardType.Event :
