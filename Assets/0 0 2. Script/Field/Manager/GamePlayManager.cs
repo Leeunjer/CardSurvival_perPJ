@@ -37,63 +37,65 @@ namespace CardGame
 
         void Update()
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if(Physics.Raycast(ray , out RaycastHit hit))
+            TileRenderer hoveredTile = null;
+            Camera mainCamera = Camera.main;
+            if (mainCamera != null && BoardMaanger.Instance != null && !isMoving)
             {
-                if(_currentTileRendeer == null)
+                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out RaycastHit hit))
                 {
-                    _currentTileRendeer = hit.transform.GetComponent<TileRenderer>();
-
-                }else if(_currentTileRendeer != hit.transform.GetComponent<TileRenderer>())
-                {
-                    _currentTileRendeer.OnHoverExit();
-                    _currentTileRendeer = hit.transform.GetComponent<TileRenderer>();
-                }
-                
-                if(Input.GetMouseButtonDown(0) && tilechecking(_currentTileRendeer) && !isMoving)
-                {
-                    Vector3 currentTileRendererPos = _currentTileRendeer.gameObject.transform.position;
-                    Vector3 dirPos = new Vector3(currentTileRendererPos.x, 1f , currentTileRendererPos.z);
-                    BoardType ClickBoard = BoardType.None;
-
-                    isMoving = true;
-                    playerObject.transform.DOMove(dirPos , 0.8f).OnComplete(() =>
+                    hoveredTile = hit.collider.GetComponentInParent<TileRenderer>();
+                    if (hoveredTile != null && (hoveredTile.IsFallen ||
+                        BoardMaanger.Instance.IsTileFallen(hoveredTile.tileOffset)))
                     {
-                        isMoving = false;
-                        OnClickTile(ClickBoard);
-                        
-                    });
-                    ClickBoard = BoardMaanger.Instance.GetBoardType(_currentTileRendeer.tileOffset);
-                    _currentTileRendeer.OnHoverExit();
-                    TileEventMove();
-                    
+                        hoveredTile = null;
+                    }
                 }
+            }
 
+            if (_currentTileRendeer != hoveredTile)
+            {
+                if (_currentTileRendeer != null) _currentTileRendeer.OnHoverExit();
+                _currentTileRendeer = hoveredTile;
+            }
 
-                if(!BoardMaanger.Instance.GetPlayerHas(_currentTileRendeer.tileOffset) && !isMoving)
+            if (_currentTileRendeer == null) return;
+
+            if (Input.GetMouseButtonDown(0) && tilechecking(_currentTileRendeer))
+            {
+                TileRenderer destinationTile = _currentTileRendeer;
+                Vector2Int previousOffset = BoardMaanger.Instance.GetPlsyerPos();
+                Vector3 tilePosition = destinationTile.transform.position;
+                Vector3 destination = new Vector3(tilePosition.x, 1f, tilePosition.z);
+
+                isMoving = true;
+                destinationTile.OnClicked();
+                _currentTileRendeer = null;
+                BoardType clickedBoard = BoardMaanger.Instance.GetBoardType(destinationTile.tileOffset);
+                // Reserve the departed tile before events choose their destinations.
+                BoardMaanger.Instance.MarkTileFallen(previousOffset);
+                TileEventMove();
+                playerObject.transform.DOMove(destination, 0.8f).OnComplete(() =>
+                {
+                    BoardMaanger.Instance.FallTile(previousOffset);
+                    isMoving = false;
+                    OnClickTile(clickedBoard);
+                });
+                return;
+            }
+
+            if (!BoardMaanger.Instance.GetPlayerHas(_currentTileRendeer.tileOffset))
                 _currentTileRendeer.OnHoverEnter();
-            }
         }
 
-
-        private bool tilechecking(TileRenderer tilerenderer)
+        private bool tilechecking(TileRenderer tileRenderer)
         {
-            if(tilerenderer == null) return false;
-            int distance = Utils.GetHexDistance(BoardMaanger.Instance.GetPlsyerPos() ,tilerenderer.tileOffset);
-            Debug.Log($" 유저와 클릭 타일 거리 {Utils.GetHexDistance(BoardMaanger.Instance.GetPlsyerPos() ,tilerenderer.tileOffset)} , 플레이어 존제 여부 {BoardMaanger.Instance.GetPlayerHas(tilerenderer.tileOffset)}");
-
-            if(distance > 1 || BoardMaanger.Instance.GetPlayerHas(tilerenderer.tileOffset))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-
+            if (tileRenderer == null || tileRenderer.IsFallen || isMoving) return false;
+            BoardMaanger board = BoardMaanger.Instance;
+            return !board.IsTileFallen(tileRenderer.tileOffset)
+                && !board.GetPlayerHas(tileRenderer.tileOffset)
+                && Utils.GetHexDistance(board.GetPlsyerPos(), tileRenderer.tileOffset) == 1;
         }
-
 
         /// <summary>
         /// 이벤트가 있는 타일들을 순회하면서 랜덤한 방향의 이웃 이벤트를 변경하고 해당 타일로 이동한다.
@@ -148,4 +150,3 @@ namespace CardGame
 
     }           
 }
-

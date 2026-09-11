@@ -14,6 +14,7 @@ namespace CardGame
         private TileEventData _tileEventData;
 
         private List<TileEventItem> _tileEventBuffer;
+        private readonly HashSet<Vector2Int> _fallenTiles = new HashSet<Vector2Int>();
 
         [SerializeField]
         private GameObject _playerObjact;
@@ -61,6 +62,7 @@ namespace CardGame
         {
             
 
+            _fallenTiles.Clear();
             _tileDataCollecter.BoardSetting(boardSize.x,boardSize.y);
 
             SetUpTileEventBuffer();
@@ -248,7 +250,7 @@ namespace CardGame
             List<TileData> EmtyTile = new List<TileData>();
             foreach (TileData tile in eventTile.neighborTiles)
             {
-                if(tile != null  && !tile.isPlayerOnHere && tile.GetBoardType() == BoardType.None)
+                if(tile != null  && !tile.isPlayerOnHere && !IsTileFallen(tile.tileOffset) && tile.GetBoardType() == BoardType.None)
                 {
                     EmtyTile.Add(tile);
                 }
@@ -289,6 +291,34 @@ namespace CardGame
         #endregion
 
         #region getSet 시리즈
+
+        public bool IsTileFallen(Vector2Int tileOffset)
+        {
+            return _fallenTiles.Contains(tileOffset);
+        }
+
+        public void MarkTileFallen(Vector2Int tileOffset)
+        {
+            _fallenTiles.Add(tileOffset);
+            _tileDataCollecter.GetTileData(tileOffset).BoardTypeSetting(BoardType.None);
+            for (int i = _TileEventRenderers.Count - 1; i >= 0; i--)
+            {
+                TileEventRenderer eventRenderer = _TileEventRenderers[i];
+                if (eventRenderer != null && eventRenderer.TileOffset == tileOffset)
+                {
+                    Destroy(eventRenderer.gameObject);
+                    _TileEventRenderers.RemoveAt(i);
+                }
+            }
+        }
+
+        public void FallTile(Vector2Int tileOffset)
+        {
+            if (!IsTileFallen(tileOffset)) return;
+            GameObject tile = _hexGridLayOut.GetTile(tileOffset);
+            if (tile != null && tile.TryGetComponent(out TileRenderer renderer))
+                renderer.Fall();
+        }
 
         public Vector2Int GetPlsyerPos()
         {
@@ -362,4 +392,3 @@ namespace CardGame
 
     }
 }
-
