@@ -18,7 +18,7 @@ MonoBehaviour:
     BoardCount: 30
   - EventName: Battle
     boardType: 0
-    BoardCount: 15
+    BoardCount: 2
   - EventName: Event
     boardType: 1
     BoardCount: 5

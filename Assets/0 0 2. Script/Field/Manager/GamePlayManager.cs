@@ -20,6 +20,8 @@ namespace CardGame
 
         public GameObject playerObject;
 
+        private BoardMaanger _boardManager;
+
         public static event Action TurnEnd;
         public static event Action TurenStart;
 
@@ -32,7 +34,7 @@ namespace CardGame
         }
         void Start()
         {
-            
+            _boardManager = FindFirstObjectByType<BoardMaanger>();
         }
 
         void Update()
@@ -126,8 +128,10 @@ namespace CardGame
                 break;
 
                 case BoardType.Battle :
-                
+
                     SceneManager.LoadScene(2);
+                    _boardManager.TileEventSave();
+
                     break;
 
                 case BoardType.Event :

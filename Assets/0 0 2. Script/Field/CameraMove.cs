@@ -18,4 +18,10 @@ public class CameraMove : MonoBehaviour
     {
         
     }
+
+    void LateUpdate()
+    {
+        gameObject.transform.position = _playerIcon.gameObject.transform.position + new Vector3(0,5,0);
+        gameObject.transform.rotation = Quaternion.Euler(90,90,90);
+    }
 }
