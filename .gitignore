@@ -107,3 +107,6 @@ InitTestScene*.unity*
 
 
 /Assets/0 0 99. Resource/
+
+# Local Codex workspace guidance
+/.Codex/AGENTS.md
