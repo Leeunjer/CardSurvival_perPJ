@@ -26,11 +26,28 @@ namespace CardGame
         public Sprite EventSprite;
         public Sprite ShopSprite;
         public Sprite CampFireSprite;
+        public Sprite EliteSprite;
+
+        private bool _eliteSpawned;
 
         /// <summary>
         /// 타일 이벤트 스프라이트를 관리하는 게임 오브젝트의 보드 오프셋
         /// </summary>
         private List<TileEventRenderer> _TileEventRenderers = new List<TileEventRenderer>();
+
+        // Keep fallen coordinates inside currentBoardData without changing its declared type.
+        private sealed class SavedBoardData : Dictionary<Vector2Int, TileData>
+        {
+            public readonly HashSet<Vector2Int> FallenTiles;
+            public readonly bool EliteSpawned;
+
+            public SavedBoardData(Dictionary<Vector2Int, TileData> tiles, HashSet<Vector2Int> fallenTiles, bool eliteSpawned)
+                : base(tiles)
+            {
+                FallenTiles = new HashSet<Vector2Int>(fallenTiles);
+                EliteSpawned = eliteSpawned;
+            }
+        }
 
         private bool _isDataLoad = false;
         
@@ -67,6 +84,7 @@ namespace CardGame
             
 
             _fallenTiles.Clear();
+            _eliteSpawned = false;
             _tileDataCollecter.BoardSetting(boardSize.x,boardSize.y);
 
             _isDataLoad = LoadBoardData();
@@ -80,6 +98,8 @@ namespace CardGame
             ConnectAllNeighbors(boardSize);
             
             PlayerSpwan(boardSize);
+            TrySpawnElite();
+            TileEventSave();
             
         }
 
@@ -134,6 +154,16 @@ namespace CardGame
         /// <param name="tilePos"></param>
         private void SetUpTileEvent(Vector2Int tilePos) 
         {
+            if (IsTileFallen(tilePos))
+            {
+                GameObject tile = _hexGridLayOut.GetTile(tilePos);
+                if (tile.TryGetComponent(out TileRenderer renderer))
+                    renderer.RestoreFallen();
+                else
+                    tile.SetActive(false);
+                return;
+            }
+
             BoardType tileEventType;
             if (_isDataLoad)
             {
@@ -166,6 +196,10 @@ namespace CardGame
 
                 case BoardType.Battle:
                 SetupEventRender(tilePos , BattleSprite);
+                break;
+
+                case BoardType.Elite:
+                SetupEliteRender(tilePos);
                 break;
 
                 case BoardType.Event:
@@ -233,15 +267,12 @@ namespace CardGame
         /// </summary>
         public void TileEventSave()
         {
-            if(PlayerDataManager.Instance.currentBoardData == null)
-            {
-                PlayerDataManager.Instance.currentBoardData = new Dictionary<Vector2Int, TileData>();
-            }
-            PlayerDataManager.Instance.currentBoardData.Clear();
-            PlayerDataManager.Instance.currentBoardData = _tileDataCollecter.GetBoardData();
-            
+            PlayerDataManager playerData = PlayerDataManager.Instance;
+            if (playerData == null) return;
 
-            
+            playerData.currentBoardData = new SavedBoardData(_tileDataCollecter.GetBoardData(), _fallenTiles, _eliteSpawned);
+            if (playerData.currentPlayer != null)
+                playerData.PlayerPosSet(GetPlsyerPos());
         }
 
         /// <summary>
@@ -250,12 +281,26 @@ namespace CardGame
         /// <returns></returns>
         private bool LoadBoardData()
         {
-            if(PlayerDataManager.Instance.currentBoardData == null) return false;
+            PlayerDataManager playerData = PlayerDataManager.Instance;
+            if (playerData == null || playerData.currentBoardData == null ||
+                playerData.currentBoardData.Count == 0) return false;
 
-            
-            _tileDataCollecter.SetBoardData(PlayerDataManager.Instance.currentBoardData);
-            _tileDataCollecter.SetUpPlayerData(PlayerDataManager.Instance.currentPlayer.PlayerPos);
+            _tileDataCollecter.SetBoardData(playerData.currentBoardData);
+            if (playerData.currentBoardData is SavedBoardData savedBoard)
+            {
+                _fallenTiles.UnionWith(savedBoard.FallenTiles);
+                _eliteSpawned = savedBoard.EliteSpawned;
+            }
 
+            // Tile occupancy is saved along with the board, even without currentPlayer.
+            foreach (TileData tile in playerData.currentBoardData.Values)
+            {
+                if (tile.isPlayerOnHere && !IsTileFallen(tile.tileOffset))
+                {
+                    _tileDataCollecter.SetUpPlayerData(tile.tileOffset);
+                    break;
+                }
+            }
 
             _tileEventBuffer.Clear();
             return true;
@@ -288,7 +333,11 @@ namespace CardGame
         /// <param name="tileOffset"></param>
         public Vector2Int TryMoveEvent(Vector2Int tileOffset) //타일 값을 받으면 변경하는 것
         {
-            ChangeTileEvent(_tileDataCollecter.GetTileData(tileOffset) , FindEmtyNeighborTile(_tileDataCollecter.GetTileData(tileOffset)) , out Vector2Int NeighborTileOffset , out bool isComplete);
+            TileData eventTile = _tileDataCollecter.GetTileData(tileOffset);
+            if (eventTile.GetBoardType() != BoardType.Battle || IsTileFallen(tileOffset))
+                return tileOffset;
+
+            ChangeTileEvent(eventTile, FindEmtyNeighborTile(eventTile), out Vector2Int NeighborTileOffset, out bool isComplete);
             
             return isComplete ? NeighborTileOffset : tileOffset;
         }
@@ -348,7 +397,10 @@ namespace CardGame
         public void MarkTileFallen(Vector2Int tileOffset)
         {
             _fallenTiles.Add(tileOffset);
-            _tileDataCollecter.GetTileData(tileOffset).BoardTypeSetting(BoardType.None);
+            TileData tileData = _tileDataCollecter.GetTileData(tileOffset);
+            bool wasBattle = tileData.GetBoardType() == BoardType.Battle;
+            tileData.BoardTypeSetting(BoardType.None);
+            if (wasBattle) BattleRemoved(tileOffset);
             for (int i = _TileEventRenderers.Count - 1; i >= 0; i--)
             {
                 TileEventRenderer eventRenderer = _TileEventRenderers[i];
@@ -382,6 +434,7 @@ namespace CardGame
         public BoardType GetBoardType(Vector2Int TargetTile)
         {
             BoardType boardType = _tileDataCollecter.PlayerEventUpdate(TargetTile);
+            if (boardType == BoardType.Battle) BattleRemoved(TargetTile);
             for(int i = _TileEventRenderers.Count -1; i >= 0; i--)
             {
                 TileEventRenderer tileEventRenderer = _TileEventRenderers[i];
@@ -398,6 +451,73 @@ namespace CardGame
             
             return boardType;
 
+        }
+
+        private void BattleRemoved(Vector2Int tileOffset)
+        {
+            int remainingCount = 0;
+            foreach (TileData tile in _tileDataCollecter.GetBoardData().Values)
+            {
+                if (tile.GetBoardType() == BoardType.Battle && !IsTileFallen(tile.tileOffset))
+                    remainingCount++;
+            }
+
+            Debug.Log($"Battle 타일이 사라졌습니다. 위치: {tileOffset}, 남은 Battle: {remainingCount}개");
+            if (remainingCount == 0)
+                Debug.Log("모든 Battle 타일이 사라졌습니다.");
+        }
+
+        public void TrySpawnElite()
+        {
+            if (_eliteSpawned) return;
+
+            List<TileData> emptyTiles = new List<TileData>();
+            List<TileData> otherTiles = new List<TileData>();
+            foreach (TileData tile in _tileDataCollecter.GetBoardData().Values)
+            {
+                if (tile.GetBoardType() == BoardType.Elite)
+                {
+                    _eliteSpawned = true;
+                    return;
+                }
+                if (IsTileFallen(tile.tileOffset)) continue;
+                if (tile.GetBoardType() == BoardType.Battle) return;
+                if (tile.isPlayerOnHere) continue;
+
+                otherTiles.Add(tile);
+                if (tile.GetBoardType() == BoardType.None)
+                    emptyTiles.Add(tile);
+            }
+
+            List<TileData> candidates = emptyTiles.Count > 0 ? emptyTiles : otherTiles;
+            if (candidates.Count == 0)
+            {
+                Debug.Log("Elite 생성 불가: 플레이어 타일 외에 남아 있는 타일이 없습니다.");
+                return;
+            }
+
+            TileData target = candidates[Random.Range(0, candidates.Count)];
+            for (int i = _TileEventRenderers.Count - 1; i >= 0; i--)
+            {
+                TileEventRenderer renderer = _TileEventRenderers[i];
+                if (renderer != null && renderer.TileOffset == target.tileOffset)
+                {
+                    Destroy(renderer.gameObject);
+                    _TileEventRenderers.RemoveAt(i);
+                }
+            }
+
+            target.BoardTypeSetting(BoardType.Elite);
+            SetupEliteRender(target.tileOffset);
+            _eliteSpawned = true;
+            Debug.Log($"Elite 타일 생성: {target.tileOffset}");
+        }
+
+        private void SetupEliteRender(Vector2Int tileOffset)
+        {
+            SetupEventRender(tileOffset, EliteSprite != null ? EliteSprite : BattleSprite);
+            if (EliteSprite == null)
+                _TileEventRenderers[_TileEventRenderers.Count - 1].GetComponent<SpriteRenderer>().color = Color.magenta;
         }
 
         public List<TileEventRenderer> GetEventTileEventRendererList()

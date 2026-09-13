@@ -74,13 +74,20 @@ namespace CardGame
                 destinationTile.OnClicked();
                 _currentTileRendeer = null;
                 BoardType clickedBoard = BoardMaanger.Instance.GetBoardType(destinationTile.tileOffset);
+
+
                 // Reserve the departed tile before events choose their destinations.
                 BoardMaanger.Instance.MarkTileFallen(previousOffset);
+
+
                 TileEventMove();
+                BoardMaanger.Instance.TrySpawnElite();
+                BoardMaanger.Instance.TileEventSave();
                 playerObject.transform.DOMove(destination, 0.8f).OnComplete(() =>
                 {
                     BoardMaanger.Instance.FallTile(previousOffset);
                     isMoving = false;
+                    LogAvailableNeighborTiles();
                     OnClickTile(clickedBoard);
                 });
                 return;
@@ -88,6 +95,37 @@ namespace CardGame
 
             if (!BoardMaanger.Instance.GetPlayerHas(_currentTileRendeer.tileOffset))
                 _currentTileRendeer.OnHoverEnter();
+        }
+
+
+
+        private void LogAvailableNeighborTiles()
+        {
+            Vector2Int playerOffset = BoardMaanger.Instance.GetPlsyerPos();
+            Vector2Int gridSize = _hexGridLayout.GetGridSize();
+            int availableCount = 0;
+
+            for (int x = playerOffset.x - 1; x <= playerOffset.x + 1; x++)
+            {
+                for (int y = playerOffset.y - 1; y <= playerOffset.y + 1; y++)
+                {
+                    if (x < 0 || y < 0 || x >= gridSize.x || y >= gridSize.y) continue;
+
+                    GameObject tile = _hexGridLayout.GetTile(new Vector2Int(x, y));
+                    if (tile != null && tile.activeInHierarchy &&
+                        tile.TryGetComponent(out TileRenderer renderer) && tilechecking(renderer))
+                    {
+                        availableCount++;
+                    }
+                }
+            }
+
+            Debug.Log($"주변에 이동 가능한 타일: {availableCount}개");
+
+            if(availableCount <= 0)
+            {
+                GameAlramsManger.Instance.DontMovePlayer();
+            }
         }
 
         private bool tilechecking(TileRenderer tileRenderer)
@@ -107,7 +145,9 @@ namespace CardGame
             List<TileEventRenderer> tileEventRenderers = BoardMaanger.Instance.GetEventTileEventRendererList();
             foreach (TileEventRenderer tileEventRenderer in tileEventRenderers)
             {
+                if (tileEventRenderer == null) continue;
                 Vector2Int dirOffset  = BoardMaanger.Instance.TryMoveEvent(tileEventRenderer.TileOffset);
+                if (dirOffset == tileEventRenderer.TileOffset) continue;
                 GameObject dirTile = _hexGridLayout.GetTile(dirOffset);
                 tileEventRenderer.MoveEventRenderer(dirTile , dirOffset);
             }
@@ -127,10 +167,11 @@ namespace CardGame
                 
                 break;
 
+                case BoardType.Elite :
                 case BoardType.Battle :
 
-                    SceneManager.LoadScene(2);
                     _boardManager.TileEventSave();
+                    SceneManager.LoadScene(2);
 
                     break;
 

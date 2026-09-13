@@ -66,6 +66,16 @@ namespace CardGame
                 .OnComplete(() => gameObject.SetActive(false));
         }
 
+        public void RestoreFallen()
+        {
+            IsFallen = true;
+            _isHovered = false;
+            _moveTween?.Kill();
+            foreach (Collider tileCollider in GetComponentsInChildren<Collider>(true))
+                tileCollider.enabled = false;
+            gameObject.SetActive(false);
+        }
+
         private void OnDestroy()
         {
             _moveTween?.Kill();

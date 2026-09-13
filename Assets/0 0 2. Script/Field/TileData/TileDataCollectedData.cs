@@ -14,6 +14,7 @@ namespace CardGame
         Shop,
         CampFire,
         None,
+        Elite,
 
     }
     
@@ -128,7 +129,7 @@ namespace CardGame
         
         public void ConnectingNeighborTile(Vector2Int offset) // 타일의 이웃 타일을 저장
         {
-            Vector2Int[] directions = (offset.y % 2 == 0) ? EvenDirections : OddDirections;
+            Vector2Int[] directions = (offset.y % 2 == 0) ? OddDirections : EvenDirections;
 
             if(!_boardData.TryGetValue(offset , out TileData currentTile))
             return;
