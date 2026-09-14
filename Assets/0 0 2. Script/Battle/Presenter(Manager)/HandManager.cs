@@ -6,6 +6,7 @@ namespace CardGame
     {
         
         public static HandManager Inst {get; private set;}
+        
         void Awake() {
             Inst = this;
         }

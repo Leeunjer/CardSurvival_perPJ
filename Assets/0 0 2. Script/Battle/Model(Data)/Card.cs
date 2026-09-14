@@ -23,13 +23,16 @@ namespace CardGame
         }
         public void OnDrag(PointerEventData eventData)
         {
+            if (_cardData == null || BattlePlayManger.Instance == null) return;
             gameObject.transform.position = eventData.position;
             gameObject.GetComponent<Image>().raycastTarget = false;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (!EventSystem.current.IsPointerOverGameObject())
+            if (_cardData != null && BattlePlayManger.Instance != null
+                && BattlePlayManger.Instance.CanUseCardEffect(_cardData.effactType)
+                && !EventSystem.current.IsPointerOverGameObject())
             {
                 Ray ray = Camera.main.ScreenPointToRay(eventData.position);
 
@@ -45,23 +48,13 @@ namespace CardGame
                     }
                 }
 
-                BattlePlayManger.Instance.UseCard(_cardData.effactType);
-                HandManager.Inst.RemoveCard(gameObject);
-                gameObject.SetActive(false);
-
-                /*
-                if(Physics.Raycast(ray,out RaycastHit hit , 80f))
+                if (BattlePlayManger.Instance.TryUseCard(_cardData.effactType))
                 {
-                    Debug.Log(hit.collider.name);
-
-                    if (hit.collider.CompareTag("Player"))
-                    {
-                        hit.collider.GetComponent<IICardCommand>().CardEffect(_cardData.effactType);
-                        HandManager.Inst.RemoveCard(gameObject);
-                        gameObject.SetActive(false);
-                    }
+                    HandManager.Inst.RemoveCard(gameObject);
+                    gameObject.SetActive(false);
                 }
-                */
+
+                
 
 
 
