@@ -16,6 +16,13 @@ namespace CardGame
         {
             PlayerDataManager.Instance.CretaePlayerData(currentPlayerCharactor , currentPlayerIcon);
             Debug.Log($"{PlayerDataManager.Instance.currentPlayer.playerPrefab.name} , {PlayerDataManager.Instance.currentPlayer.playerIcon.name}  select");
+
+            Utils.FadeOutIn(SceneChange , 2f);
+            
+        }
+
+        private void SceneChange()
+        {
             SceneManager.LoadScene(1);
         }
 

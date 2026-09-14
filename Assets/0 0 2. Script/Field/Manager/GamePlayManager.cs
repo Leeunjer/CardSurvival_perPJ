@@ -171,8 +171,7 @@ namespace CardGame
                 case BoardType.Battle :
 
                     _boardManager.TileEventSave();
-                    SceneManager.LoadScene(2);
-
+                    Utils.FadeOutIn(ChangeBattelScene , 2f);
                     break;
 
                 case BoardType.Event :
@@ -191,6 +190,12 @@ namespace CardGame
             boardType =BoardType.None;
         }
 
+
+        private void ChangeBattelScene()
+        {
+            SceneManager.LoadScene(2);
+            
+        }
 
 
     }           
