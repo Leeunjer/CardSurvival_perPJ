@@ -1671,9 +1671,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 426133897}
-        m_TargetAssemblyTypeName: CardGame.HandManager, Assembly-CSharp
-        m_MethodName: AddCard
+      - m_Target: {fileID: 1239952592}
+        m_TargetAssemblyTypeName: CardGame.BattlePlayManger, Assembly-CSharp
+        m_MethodName: EndPlayerTurn
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

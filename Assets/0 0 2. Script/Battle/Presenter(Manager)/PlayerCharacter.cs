@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace CardGame
@@ -14,6 +13,7 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
     private Queue<IEnumerator> _commandQueue = new();
 
     private bool _isProcessing = false;
+    public bool IsProcessing => _isProcessing;
 
     private GameObject _PlayerCharactor;
 
@@ -40,24 +40,30 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
 
     private void AddCommand(IEnumerator command)
         {
+            // 카드 사용 시에는 저장하고, 턴 종료 시 한 번에 실행한다.
             _commandQueue.Enqueue(command);
-
-            if (!_isProcessing)
-            {
-                StartCoroutine(ProcessCommand());
-            }
         }
 
-    private IEnumerator ProcessCommand()
+    public IEnumerator ProcessCommand()
         {
-            _isProcessing = true;
-
-            while (_commandQueue.Count > 0)
+            if (_isProcessing)
             {
-                yield return StartCoroutine(_commandQueue.Dequeue());
+                yield return new WaitUntil(() => !_isProcessing);
+                yield break;
             }
 
-            _isProcessing = false;
+            _isProcessing = true;
+            try
+            {
+                while (_commandQueue.Count > 0)
+                {
+                    yield return _commandQueue.Dequeue();
+                }
+            }
+            finally
+            {
+                _isProcessing = false;
+            }
         }
     public void CardEffect(CardEffectType cardEffect)
     {
@@ -65,7 +71,11 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
         switch (cardEffect)
             {
                 case CardEffectType.Damage :
-                AddCommand(Attack());
+                // 첫 공격 카드만 명령을 등록하고, 실행 시 최종 누적치를 사용한다.
+                if (BattlePlayManger.Instance.AttackStack == 1)
+                {
+                    AddCommand(Attack());
+                }
                 break;
                     
                 case CardEffectType.Heal:
@@ -74,12 +84,16 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
 
 
                 case CardEffectType.Draw:
-                Draw();
+                AddCommand(Draw());
                 break;
 
 
                 case CardEffectType.Block:
-                AddCommand(Gaurd());
+                // 방어 카드를 여러 장 사용해도 턴 종료 명령은 한 번만 등록한다.
+                if (BattlePlayManger.Instance.GuardStack == 1)
+                {
+                    AddCommand(Gaurd());
+                }
                 break;
 
             }
@@ -87,9 +101,10 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
 
     
 
-    private void Draw()
+    private IEnumerator Draw()
     {
         HandManager.Inst.AddCard();
+        yield return null;
     }
 
     private IEnumerator Heal()
@@ -101,14 +116,30 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
 
     private IEnumerator Attack()
     {
-        Debug.Log("Attack1");
-        _playerView.Attack1();
-        BattlePlayManger.Instance.HitDamge(20);
+        int attackStack = BattlePlayManger.Instance.AttackStack;
+        switch (attackStack)
+        {
+            case 1:
+                _playerView.Attack1();
+                break;
+            case 2:
+                _playerView.Attack2();
+                break;
+            case 3:
+                _playerView.Attack3();
+                break;
+            default:
+                yield break;
+        }
+
+        // 카드 한 장당 기존 피해량 20을 유지한다.
+        BattlePlayManger.Instance.HitDamge(20 * attackStack);
         yield return null;
     }
 
     IEnumerator Gaurd()
         {
+            Debug.Log($"Guard 실행: 누적 방어 스택 {BattlePlayManger.Instance.GuardStack}");
             _playerView.OnGuard();
             yield return new WaitForSeconds(2f);
             _playerView.UnGuard();
