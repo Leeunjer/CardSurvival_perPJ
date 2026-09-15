@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 960e04d591a58ce49bc0d62502500681, type: 3}
+  m_Name: EnemyData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  Enemys:
+  - EnemyObject: {fileID: 7421383292427860544, guid: 4464880b8c6173b4cb595b813a647876, type: 3}
+    Hp: 100
+    AttackDamage: 10
+  - EnemyObject: {fileID: 4271066199787026664, guid: 27e11365dc84e1e4eaa3636cb48c5235, type: 3}
+    Hp: 100
+    AttackDamage: 10
+  - EnemyObject: {fileID: 7896306703814559556, guid: c53858fca2b72f041bd85f499373df6d, type: 3}
+    Hp: 100
+    AttackDamage: 10
+  - EnemyObject: {fileID: 8457416733115795942, guid: 038a163e11fff944db10c9629ee45bb8, type: 3}
+    Hp: 100
+    AttackDamage: 10

@@ -31,7 +31,7 @@ namespace CardGame
         public void OnEndDrag(PointerEventData eventData)
         {
             if (_cardData != null && BattlePlayManger.Instance != null
-                && BattlePlayManger.Instance.CanUseCardEffect(_cardData.effactType)
+                && BattlePlayManger.Instance.CanUseCardEffect(_cardData)
                 && !EventSystem.current.IsPointerOverGameObject())
             {
                 Ray ray = Camera.main.ScreenPointToRay(eventData.position);
@@ -48,7 +48,7 @@ namespace CardGame
                     }
                 }
 
-                if (BattlePlayManger.Instance.TryUseCard(_cardData.effactType))
+                if (BattlePlayManger.Instance.TryUseCard(_cardData))
                 {
                     HandManager.Inst.RemoveCard(gameObject);
                     gameObject.SetActive(false);

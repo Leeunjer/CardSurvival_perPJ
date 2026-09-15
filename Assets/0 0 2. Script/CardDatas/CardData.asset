@@ -18,13 +18,16 @@ MonoBehaviour:
     cost: 10
     effactType: 0
     CardCount: 5
+    CardMaxCounct: 3
   - cardName: Block
     icon: {fileID: 21300000, guid: b2c3a79f8899a9e4793036def6f22b38, type: 3}
     cost: 10
     effactType: 3
     CardCount: 5
+    CardMaxCounct: 3
   - cardName: Heal
     icon: {fileID: 21300000, guid: 26d202a71506c914281c97399f065ad7, type: 3}
     cost: 10
     effactType: 1
     CardCount: 5
+    CardMaxCounct: 3

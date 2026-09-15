@@ -374,6 +374,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 869733961}
+  - component: {fileID: 869733963}
+  - component: {fileID: 869733962}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -394,10 +396,39 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1425841787}
   - {fileID: 1671799719}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &869733962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869733960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 993cd29f986acbd468edcdb981674166, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAIManager
+  _enemyData: {fileID: 11400000, guid: f646e9035117bbc43bd8a0cdd17426e6, type: 2}
+  _enemyView: {fileID: 869733963}
+  _aiState: 2
+--- !u!114 &869733963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869733960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03fffe26f01b7524e9d23feb83149592, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyView
+  _attackTrigger: Attack1
+  _hitTrigger: Hit
+  _guardParameter: Guard
 --- !u!1 &907855966
 GameObject:
   m_ObjectHideFlags: 0
@@ -1274,11 +1305,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardGame.EnemyHpbar
   _image: {fileID: 1084163035}
   _maxHp: 100
---- !u!4 &1425841787 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4293736555261642588, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
-  m_PrefabInstance: {fileID: 1650445421}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1584834460
 GameObject:
   m_ObjectHideFlags: 0
@@ -1392,63 +1418,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1650445421
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 869733961}
-    m_Modifications:
-    - target: {fileID: 4293736555261642588, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4293736555261642588, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4293736555261642588, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4293736555261642588, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4293736555261642588, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4293736555261642588, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4293736555261642588, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4293736555261642588, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4293736555261642588, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 4293736555261642588, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4565069214868417150, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
-      propertyPath: m_Name
-      value: Charactor1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: ef679b5d03bd4a343a4a498c47287c7a, type: 3}
 --- !u!1 &1671799718
 GameObject:
   m_ObjectHideFlags: 0
