@@ -67,7 +67,15 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
         }
     public void CardEffect(CardEffectType cardEffect)
     {
-        
+        CardEffect(new CardItem { effactType = cardEffect });
+    }
+
+    public void CardEffect(CardItem card)
+    {
+        if (card == null) return;
+        CardEffectType cardEffect = card.effactType;
+        bool hasDetailEffect = card.cardEffect != null;
+
         switch (cardEffect)
             {
                 case CardEffectType.Damage :
@@ -75,6 +83,10 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
                 if (BattlePlayManger.Instance.AttackStack == 1)
                 {
                     AddCommand(Attack());
+                }
+                if (!hasDetailEffect)
+                {
+                    AddCommand(DealDefaultDamage());
                 }
                 break;
                     
@@ -84,7 +96,10 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
 
 
                 case CardEffectType.Draw:
-                AddCommand(Draw());
+                if (!hasDetailEffect)
+                {
+                    AddCommand(Draw());
+                }
                 break;
 
 
@@ -97,9 +112,25 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
                 break;
 
             }
+
+        if (hasDetailEffect)
+        {
+            AddCommand(ExecuteCardEffect(card));
+        }
     }
 
-    
+    private IEnumerator ExecuteCardEffect(CardItem card)
+    {
+        // 카드 사용 시 즉시 실행하지 않고 턴 종료 명령 큐에서 실행한다.
+        card.UseEffect();
+        yield return null;
+    }
+
+    private IEnumerator DealDefaultDamage()
+    {
+        BattlePlayManger.Instance.HitDamge(20);
+        yield return null;
+    }
 
     private IEnumerator Draw()
     {
@@ -117,7 +148,9 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
     private IEnumerator Attack()
     {
         int attackStack = BattlePlayManger.Instance.AttackStack;
-        switch (attackStack)
+        if (attackStack <= 0) yield break;
+        // 사용 제한은 카드 데이터가 결정하며, 애니메이션은 준비된 3단계까지 사용한다.
+        switch (Mathf.Min(attackStack, 3))
         {
             case 1:
                 _playerView.Attack1();
@@ -132,8 +165,7 @@ public class PlayerCharacter : MonoBehaviour , IICardCommand
                 yield break;
         }
 
-        // 카드 한 장당 기존 피해량 20을 유지한다.
-        BattlePlayManger.Instance.HitDamge(20 * attackStack);
+        // 피해는 각 카드의 효과 명령에서 처리하고 애니메이션만 한 번 재생한다.
         yield return null;
     }
 

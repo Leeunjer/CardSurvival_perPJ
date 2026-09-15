@@ -14,6 +14,8 @@ namespace CardGame
 
         public Dictionary<Vector2Int , TileData> currentBoardData;
 
+
+        
         void Awake() 
         {
             if(Instance != null && Instance != this) 

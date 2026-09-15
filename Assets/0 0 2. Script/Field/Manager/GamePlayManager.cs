@@ -26,6 +26,8 @@ namespace CardGame
         public static event Action TurenStart;
 
         private bool isMoving = false;
+
+        
         
 
         void OnEnable() 

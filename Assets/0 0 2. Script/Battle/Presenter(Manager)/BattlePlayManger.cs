@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,10 +8,9 @@ namespace CardGame
     public class BattlePlayManger : MonoBehaviour
     {
         int _attackStack;
-        const int MaxAttackStack = 3;
         public int AttackStack => _attackStack;
         int _guardStack;
-        const int maxGuardStack = 3;
+        readonly Dictionary<CardItem, int> _cardUseCounts = new();
         public int GuardStack => _guardStack;
         Coroutine _turnCoroutine;
         bool _playerActionRequested;
@@ -155,6 +155,7 @@ namespace CardGame
         {
             _attackStack = 0;
             _guardStack = 0;
+            _cardUseCounts.Clear();
             _playerActionRequested = false;
             _playerTurnEndRequested = false;
 
@@ -253,21 +254,29 @@ namespace CardGame
                 Instance = null;
             }
         }
-        public void UseCard(CardEffectType cardEffect)
+        public void UseCard(CardItem card)
         {
-            TryUseCard(cardEffect);
+            TryUseCard(card);
         }
 
-        public bool CanUseCardEffect(CardEffectType cardEffect)
+        public bool CanUseCardEffect(CardItem card)
         {
-            return CanUseCard && _playerObj != null
-                && (cardEffect != CardEffectType.Damage || _attackStack < MaxAttackStack) 
-                && (cardEffect != CardEffectType.Block || _guardStack < maxGuardStack);
+            if (card == null || !CanUseCard || _playerObj == null) return false;
+
+            // 동일한 CardItem에서 생성된 카드들은 한 턴의 사용 횟수를 공유한다.
+            _cardUseCounts.TryGetValue(card, out int usedCount);
+            return usedCount < card.CardMaxCounct;
         }
 
-        public bool TryUseCard(CardEffectType cardEffect)
+        public bool TryUseCard(CardItem card)
         {
-            if (!CanUseCardEffect(cardEffect)) return false;
+            if (card == null) return false;
+            CardEffectType cardEffect = card.effactType;
+            if (!CanUseCardEffect(card)) return false;
+
+            _cardUseCounts.TryGetValue(card, out int usedCount);
+            _cardUseCounts[card] = usedCount + 1;
+            Debug.Log($"{card.cardName} 사용 횟수: {usedCount + 1}/{card.CardMaxCounct}");
 
             if (cardEffect == CardEffectType.Damage)
             {
@@ -280,7 +289,7 @@ namespace CardGame
             }
 
             _playerActionRequested = true;
-            _playerObj.GetComponent<IICardCommand>().CardEffect(cardEffect);
+            _playerObj.CardEffect(card);
             return true;
         }
 
