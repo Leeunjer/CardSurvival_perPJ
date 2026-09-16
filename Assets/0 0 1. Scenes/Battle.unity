@@ -414,6 +414,8 @@ MonoBehaviour:
   _enemyData: {fileID: 11400000, guid: f646e9035117bbc43bd8a0cdd17426e6, type: 2}
   _enemyView: {fileID: 869733963}
   _aiState: 2
+  _enemyJudgmentTypes: 000000000100000002000000
+  _guardDuration: 1
 --- !u!114 &869733963
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -427,6 +429,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyView
   _attackTrigger: Attack1
+  _healTrigger: BUFF
   _hitTrigger: Hit
   _guardParameter: Guard
 --- !u!1 &907855966

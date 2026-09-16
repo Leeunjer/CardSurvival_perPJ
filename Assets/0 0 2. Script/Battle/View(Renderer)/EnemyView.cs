@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class EnemyView : MonoBehaviour
 {
-    [SerializeField] private string _attackTrigger = "Attack1";
+    [SerializeField] private string _attackTrigger = "Attack";
+    [SerializeField] private string _healTrigger = "BUFF";
     [SerializeField] private string _hitTrigger = "Hit";
     [SerializeField] private string _guardParameter = "Guard";
 
@@ -36,7 +37,49 @@ public class EnemyView : MonoBehaviour
 
     public void Attack()
     {
-        if (_animator != null) _animator.SetTrigger(_attackTrigger);
+        UnGuard();
+        // 기존 씬에 저장된 Attack1 설정도 현재 적 컨트롤러의 Attack에 연결한다.
+        string trigger = _attackTrigger;
+        if (!HasParameter(trigger, AnimatorControllerParameterType.Trigger)
+            && trigger == "Attack1")
+            trigger = "Attack";
+        PlayTrigger(trigger);
+    }
+
+    public void PlayJudgment(EnemyJudgmentData.Think judgment)
+    {
+        switch (judgment)
+        {
+            case EnemyJudgmentData.Think.Attack:
+                Attack();
+                break;
+            case EnemyJudgmentData.Think.Guard:
+                OnGuard();
+                break;
+            case EnemyJudgmentData.Think.Heal:
+                UnGuard();
+                PlayTrigger(_healTrigger);
+                break;
+        }
+    }
+
+    private bool HasParameter(string parameterName, AnimatorControllerParameterType type)
+    {
+        if (_animator == null || string.IsNullOrEmpty(parameterName)) return false;
+        foreach (AnimatorControllerParameter parameter in _animator.parameters)
+        {
+            if (parameter.name == parameterName && parameter.type == type) return true;
+        }
+        return false;
+    }
+
+    private void PlayTrigger(string trigger)
+    {
+        if (_animator == null) return;
+        if (HasParameter(trigger, AnimatorControllerParameterType.Trigger))
+            _animator.SetTrigger(trigger);
+        else
+            Debug.LogWarning($"적 Animator에 {trigger} Trigger가 없습니다.", this);
     }
 
     public void Hit()

@@ -9,6 +9,9 @@ public class EnemyItem
     public int Hp;
 
     public int AttackDamage;
+    public int GuardDamage;
+    
+    public EnemyJudgmentData enemyJudgment;
     
 }
 

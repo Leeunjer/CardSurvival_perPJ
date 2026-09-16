@@ -16,12 +16,16 @@ MonoBehaviour:
   - EnemyObject: {fileID: 7421383292427860544, guid: 4464880b8c6173b4cb595b813a647876, type: 3}
     Hp: 100
     AttackDamage: 10
+    GuardDamage: 5
   - EnemyObject: {fileID: 4271066199787026664, guid: 27e11365dc84e1e4eaa3636cb48c5235, type: 3}
     Hp: 100
     AttackDamage: 10
+    GuardDamage: 5
   - EnemyObject: {fileID: 7896306703814559556, guid: c53858fca2b72f041bd85f499373df6d, type: 3}
     Hp: 100
     AttackDamage: 10
+    GuardDamage: 5
   - EnemyObject: {fileID: 8457416733115795942, guid: 038a163e11fff944db10c9629ee45bb8, type: 3}
     Hp: 100
     AttackDamage: 10
+    GuardDamage: 5

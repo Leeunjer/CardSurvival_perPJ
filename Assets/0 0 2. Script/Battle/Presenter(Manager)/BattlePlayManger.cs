@@ -10,6 +10,8 @@ namespace CardGame
         int _attackStack;
         public int AttackStack => _attackStack;
         int _guardStack;
+        int _healStack;
+        public int HealStack => _healStack;
         readonly Dictionary<CardItem, int> _cardUseCounts = new();
         public int GuardStack => _guardStack;
         Coroutine _turnCoroutine;
@@ -20,6 +22,7 @@ namespace CardGame
             && !_playerActionRequested && !_playerTurnEndRequested;
 
         PlayerCharacter _playerObj;
+        EnemyAIManager _enemyAIManager;
 
         EnemyHpbar _enemyHpbar;
 
@@ -59,6 +62,7 @@ namespace CardGame
         void Start()
         {
             _playerObj = FindFirstObjectByType<PlayerCharacter>();
+            _enemyAIManager = FindFirstObjectByType<EnemyAIManager>();
             _playerHpBar = FindFirstObjectByType<PlayerHpBar>();
             _enemyHpbar = FindFirstObjectByType<EnemyHpbar>();
             ChangeTurnState(Turenstate.GameStart);
@@ -103,12 +107,13 @@ namespace CardGame
                         break;
                     case Turenstate.PlayerTurn:
                         yield return PlayerTurn();
-                        state = _playerTurnEndRequested
-                            ? Turenstate.PlayerturnEnd : Turenstate.EnemyTurn;
+                        state = _playerActionRequested
+                            ? Turenstate.EnemyTurn : Turenstate.PlayerturnEnd;
                         break;
                     case Turenstate.EnemyTurn:
                         yield return EnemyTurn();
-                        state = Turenstate.PlayerTurn;
+                        state = _playerTurnEndRequested
+                            ? Turenstate.PlayerturnEnd : Turenstate.PlayerTurn;
                         break;
                     case Turenstate.PlayerturnEnd:
                         yield return PlayerTurnEnd();
@@ -155,9 +160,11 @@ namespace CardGame
         {
             _attackStack = 0;
             _guardStack = 0;
+            _healStack = 0;
             _cardUseCounts.Clear();
             _playerActionRequested = false;
             _playerTurnEndRequested = false;
+            if (_enemyAIManager != null) _enemyAIManager.ResetTurn();
 
             
             yield return null;
@@ -186,21 +193,19 @@ namespace CardGame
             yield return new WaitUntil(() => _playerActionRequested || _playerTurnEndRequested
                 || GetBattleResult() != Turenstate.TurnSet);
             yield return new WaitUntil(() => _playerObj == null || !_playerObj.IsProcessing);
-            _playerActionRequested = false;
         }
 
         private IEnumerator EnemyTurn()
         {
-            // 적 AI의 행동 코루틴을 이 위치에서 기다린다.
+            // 카드마다 판단만 저장하고 실제 동작은 Battle에서 실행한다.
+            if (_enemyAIManager != null) _enemyAIManager.ExecuteAI();
+            _playerActionRequested = false;
             yield return null;
         }
 
         private IEnumerator PlayerTurnEnd()
         {
-            if (_playerObj != null)
-            {
-                yield return _playerObj.ProcessCommand();
-            }
+            yield return null;
         }
 
         private IEnumerator EnemyTurnEnd()
@@ -211,8 +216,22 @@ namespace CardGame
 
         private IEnumerator Battle()
         {
-            // 턴 종료 후 정산할 전투 효과를 추가한다.
-            yield return null;
+            if (_playerObj != null)
+            {
+                yield return _playerObj.ProcessCommand();
+                yield return EnemyAIManager.WaitForActionAnimation(
+                    _playerObj.GetComponentInChildren<Animator>());
+            }
+
+            // 플레이어 행동으로 전투가 끝났다면 적은 행동하지 않는다.
+            if (GetBattleResult() != Turenstate.TurnSet)
+            {
+                if (_enemyAIManager != null) _enemyAIManager.ResetTurn();
+                yield break;
+            }
+
+            if (_enemyAIManager != null)
+                yield return _enemyAIManager.ProcessJudgments();
         }
 
         private IEnumerator Victory()
@@ -286,6 +305,10 @@ namespace CardGame
             {
                 _guardStack++;
                 Debug.Log($"Guard 카드 사용: 현재 방어 스택 {_guardStack}");
+            }
+            else if (cardEffect == CardEffectType.Heal)
+            {
+                _healStack++;
             }
 
             _playerActionRequested = true;
