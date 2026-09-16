@@ -8,8 +8,8 @@ public class EliteEnemyItem
 {
     public GameObject EliteEnemyObjct;
     public int Hp;
-
     public int AttackDamage;
+    public EnemyJudgmentData enemyJudgment;
 }
 
 
