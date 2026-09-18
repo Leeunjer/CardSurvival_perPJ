@@ -226,8 +226,8 @@ MonoBehaviour:
   innerSize: 0
   height: 1
   isFlatTopped: 0
-  material_white: {fileID: 2100000, guid: 8e9fbdf4b2a82e04eac4bedb8a73b2cb, type: 2}
-  material_Black: {fileID: 2100000, guid: d8b648e0a512c074b9b6ae984d388128, type: 2}
+  material_white: {fileID: 2100000, guid: bb82507e24458e24dabc34379238e71c, type: 2}
+  material_Black: {fileID: 2100000, guid: 01c1c6e3bcdab7f45a01cf119f64f63c, type: 2}
 --- !u!1 &405529863
 GameObject:
   m_ObjectHideFlags: 0

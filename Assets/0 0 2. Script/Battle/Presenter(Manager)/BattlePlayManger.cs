@@ -319,7 +319,7 @@ namespace CardGame
         public void HitDamge(int damage)
         {
             _enemyHpbar.HitEnemy(damage);
-
+            _enemyAIManager.EnemyHit();
         }
 
     }
