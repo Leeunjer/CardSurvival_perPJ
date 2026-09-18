@@ -28,6 +28,10 @@ public class EnemyAIManager : MonoBehaviour
     [SerializeField, Min(0.1f)] private float _guardDuration = 2f;
     public int PendingJudgmentCount => _judgmentQueue.Count;
     public bool IsProcessing { get; private set; }
+    public int AttackStack { get; private set; }
+    public int GuardStack { get; private set; }
+    public int HealStack { get; private set; }
+    private EnemyPattern _enemyPattern;
 
     public IReadOnlyList<EnemyJudgmentData> EnemyJudgments => _enemyJudgments;
     public EnemyJudgmentData EnemyAI { get; private set; }
@@ -60,6 +64,23 @@ public class EnemyAIManager : MonoBehaviour
         }
 
         _enemyView.SetEnemyObject(CurrentEnemy.EnemyObject);
+    }
+
+    private void Start()
+    {
+        // 프리팹 원본이 아니라 Awake에서 생성한 적 인스턴스의 패턴을 사용한다.
+        if (_enemyView != null && _enemyView.EnemyObject != null)
+            _enemyPattern = _enemyView.EnemyObject.GetComponentInChildren<EnemyPattern>(true);
+    }
+
+    public void ExecuteTurnStartEffect()
+    {
+        if (_enemyPattern != null) _enemyPattern.EnemyTurnStartPattern();
+    }
+
+    public void ExecuteTurnEndEffect()
+    {
+        if (_enemyPattern != null) _enemyPattern.EnemyTurnEndPattern();
     }
 
     public void ChangeAIState(AIState state)
@@ -117,6 +138,9 @@ public class EnemyAIManager : MonoBehaviour
     public void ResetTurn()
     {
         _judgmentQueue.Clear();
+        AttackStack = 0;
+        GuardStack = 0;
+        HealStack = 0;
         LastJudgment = null;
         if (_enemyView != null) _enemyView.UnGuard();
     }
@@ -127,10 +151,44 @@ public class EnemyAIManager : MonoBehaviour
         if (battle == null || EnemyAI == null) return;
 
         LastJudgment = EnemyAI.Judgment(battle.AttackStack, battle.GuardStack, battle.HealStack);
-        _judgmentQueue.Enqueue(LastJudgment.Value);
+        AddJudgmentStack(LastJudgment.Value);
         Debug.Log($"적 AI [{_aiState}]: 공격 {battle.AttackStack}, 방어 {battle.GuardStack}, "
             + $"회복 {battle.HealStack} → {LastJudgment.Value}", this);
 
+    }
+
+    private void AddJudgmentStack(EnemyJudgmentData.Think judgment)
+    {
+        int stack;
+        switch (judgment)
+        {
+            case EnemyJudgmentData.Think.Attack:
+                stack = ++AttackStack;
+                break;
+            case EnemyJudgmentData.Think.Guard:
+                stack = ++GuardStack;
+                break;
+            case EnemyJudgmentData.Think.Heal:
+                stack = ++HealStack;
+                break;
+            default:
+                return;
+        }
+
+        // 종류별 첫 판단만 등록하여 최초 등장 순서대로 한 번씩 실행한다.
+        if (stack == 1) _judgmentQueue.Enqueue(judgment);
+        Debug.Log($"[Enemy][Stack] {judgment}: {stack - 1} → {stack}", this);
+    }
+
+    private int GetJudgmentStack(EnemyJudgmentData.Think judgment)
+    {
+        switch (judgment)
+        {
+            case EnemyJudgmentData.Think.Attack: return AttackStack;
+            case EnemyJudgmentData.Think.Guard: return GuardStack;
+            case EnemyJudgmentData.Think.Heal: return HealStack;
+            default: return 0;
+        }
     }
 
     public IEnumerator ProcessJudgments()
@@ -149,7 +207,9 @@ public class EnemyAIManager : MonoBehaviour
                 EnemyJudgmentData.Think judgment = _judgmentQueue.Dequeue();
                 if (_enemyView == null) continue;
 
-                _enemyView.PlayJudgment(judgment);
+                int stack = GetJudgmentStack(judgment);
+                Debug.Log($"[Enemy][Execute] {judgment}: 누적 스택 {stack}", this);
+                _enemyView.PlayJudgment(judgment, stack);
                 if (judgment == EnemyJudgmentData.Think.Guard)
                 {
                     yield return new WaitForSeconds(_guardDuration);

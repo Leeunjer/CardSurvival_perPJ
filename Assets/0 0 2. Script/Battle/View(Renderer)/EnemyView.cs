@@ -35,9 +35,16 @@ public class EnemyView : MonoBehaviour
         }
     }
 
-    public void Attack()
+    public void Attack(int stack = 1)
     {
         UnGuard();
+        // 단계별 공격이 있는 적은 최종 스택을 사용하고, 없으면 기본 공격을 사용한다.
+        string stackedTrigger = $"Attack{Mathf.Clamp(stack, 1, 3)}";
+        if (HasParameter(stackedTrigger, AnimatorControllerParameterType.Trigger))
+        {
+            PlayTrigger(stackedTrigger);
+            return;
+        }
         // 기존 씬에 저장된 Attack1 설정도 현재 적 컨트롤러의 Attack에 연결한다.
         string trigger = _attackTrigger;
         if (!HasParameter(trigger, AnimatorControllerParameterType.Trigger)
@@ -46,12 +53,12 @@ public class EnemyView : MonoBehaviour
         PlayTrigger(trigger);
     }
 
-    public void PlayJudgment(EnemyJudgmentData.Think judgment)
+    public void PlayJudgment(EnemyJudgmentData.Think judgment, int stack = 1)
     {
         switch (judgment)
         {
             case EnemyJudgmentData.Think.Attack:
-                Attack();
+                Attack(stack);
                 break;
             case EnemyJudgmentData.Think.Guard:
                 OnGuard();

@@ -183,7 +183,8 @@ namespace CardGame
 
         private IEnumerator EnemyTurnStart()
         {
-            // 적의 턴 시작 효과를 추가한다.
+            // 적별 효과의 조회와 실행은 EnemyAIManager에 위임한다.
+            if (_enemyAIManager != null) _enemyAIManager.ExecuteTurnStartEffect();
 
             yield return null;
         }
@@ -210,7 +211,8 @@ namespace CardGame
 
         private IEnumerator EnemyTurnEnd()
         {
-            // 적의 턴 종료 효과를 추가한다.
+            // Battle 행동과 별도로 현재 적의 턴 종료 효과를 실행한다.
+            if (_enemyAIManager != null) _enemyAIManager.ExecuteTurnEndEffect();
             yield return null;
         }
 
