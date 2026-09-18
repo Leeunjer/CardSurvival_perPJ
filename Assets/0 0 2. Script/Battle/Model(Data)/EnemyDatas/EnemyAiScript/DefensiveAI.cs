@@ -4,6 +4,7 @@ public class DefensiveAI : EnemyJudgmentData
 {
     public override Think Judgment(int Attackstack, int GuardStack, int Healstack)
     {
+        int num = Random.Range(0, 100);
         // 최대 스택이 같으면 공격, 방어, 회복 순으로 우선한다.
         int attackChance;
         if (Attackstack >= GuardStack && Attackstack >= Healstack)
@@ -13,6 +14,6 @@ public class DefensiveAI : EnemyJudgmentData
         else
             attackChance = 70;
 
-        return Random.Range(0, 100) < attackChance ? Think.Attack : Think.Guard;
+        return num < attackChance ? Think.Attack : num % 2 == 0 ? Think.Guard : Think.Heal;
     }
 }
