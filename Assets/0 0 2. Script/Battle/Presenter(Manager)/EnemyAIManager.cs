@@ -186,4 +186,10 @@ public class EnemyAIManager : MonoBehaviour
             yield return null;
         }
     }
+
+
+    public void EnemyHit()
+    {
+        _enemyView.Hit();
+    }
 }

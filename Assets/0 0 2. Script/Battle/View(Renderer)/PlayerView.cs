@@ -44,7 +44,10 @@ namespace CardGame
             _anim.SetBool("Guard" , false);
         }
 
-
+        public void AttackVerdict()
+        {
+            
+        }
 
     }
 
