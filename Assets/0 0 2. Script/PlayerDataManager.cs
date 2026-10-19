@@ -7,6 +7,8 @@ namespace CardGame
     
     public class PlayerDataManager : MonoBehaviour
     {
+        [SerializeField]
+        private CardData _defaultDeck;
 
         public static PlayerDataManager Instance {get; private set;}
 
@@ -38,7 +40,8 @@ namespace CardGame
             currentPlayer = new PlayerData
             {
                 playerPrefab = PlayerPrefab,
-                playerIcon = playericon
+                playerIcon = playericon,
+                cardDeck = _defaultDeck
             };
         }
 

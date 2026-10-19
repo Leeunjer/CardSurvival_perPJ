@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 namespace CardGame
@@ -7,7 +6,7 @@ namespace CardGame
     {
         public Vector2Int PlayerPos{get ; set;}
 
-        public string DeckData {get; set;}
+        public CardData cardDeck{get; set;}
 
         public int PlayerHp {get; set;}
 

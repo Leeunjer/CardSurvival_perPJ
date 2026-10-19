@@ -365,6 +365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 848bfca3519eddf419d7e7e270e440f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardGame.PlayerDataManager
+  _defaultDeck: {fileID: 11400000, guid: 6c980476b1c3ff9419d24bf51093b9bc, type: 2}
 --- !u!1 &348771333
 GameObject:
   m_ObjectHideFlags: 0
