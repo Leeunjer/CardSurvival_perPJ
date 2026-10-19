@@ -181,7 +181,8 @@ namespace CardGame
                 break;
 
                 case BoardType.Shop :
-                
+                    _boardManager.TileEventSave();
+                    Utils.FadeOutIn(ChangeShopScene , 2f);
                 break;
 
                 case BoardType.CampFire :
@@ -197,6 +198,10 @@ namespace CardGame
         {
             SceneManager.LoadScene(2);
             
+        }
+        private void ChangeShopScene()
+        {
+            SceneManager.LoadScene(3);
         }
 
 

@@ -6,15 +6,28 @@ namespace CardGame
     public class CardManager : MonoBehaviour
     {
         public static CardManager Inst {get; private set;}
-        private void Awake() {
-            Inst = this;
-        }
-        [SerializeField] CardData _cardData;
+
+        CardData _cardData;
 
         List<CardItem> cardBuffer;
 
+
+
+        private void Awake() {
+            Inst = this;
+
+            
+
+        }
+
+
         void Start()
         {
+            if(PlayerDataManager.Instance.currentPlayer.cardDeck != null)
+            {
+                _cardData = PlayerDataManager.Instance.currentPlayer.cardDeck;
+            }
+            
             SetupCardBuffer();
         }
 
@@ -23,6 +36,9 @@ namespace CardGame
         {
             cardBuffer = new List<CardItem>();
             
+
+
+
             for (int i = 0; i < _cardData.cards.Length; i++)
             {
                 CardItem card = _cardData.cards[i];
